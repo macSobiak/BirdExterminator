@@ -9,6 +9,7 @@
  */
 struct FWorldData
 {
+	FWorldData(){};
 	FWorldData(const uint8& WorldSizeXRef, const uint8& WorldSizeYRef) : WorldSizeX(WorldSizeXRef), WorldSizeY(WorldSizeYRef)
 	{
 		BuildingHeightMatrix.reserve(WorldSizeY);
@@ -31,5 +32,5 @@ public:
 	WorldConfigFileParser();
 	~WorldConfigFileParser();
 
-	bool TryGetWorldDataFromConfigFile(FWorldData* &WorldDataRef);
+	bool TryGetWorldDataFromConfigFile(FWorldData &WorldDataRef);
 };

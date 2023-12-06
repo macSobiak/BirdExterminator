@@ -11,10 +11,13 @@ WorldConfigFileParser::~WorldConfigFileParser()
 {
 }
 
-bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData* &WorldDataRef)
+bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataRef)
 {
-	FString FullFilePath = FPaths::ProjectConfigDir().Append(TEXT("WorldConfig.txt"));
-
+#if WITH_EDITOR
+	const FString FullFilePath = FPaths::ProjectConfigDir().Append(TEXT("WorldConfig.txt"));
+#else
+	const FString FullFilePath = "WorldConfig.txt";
+#endif
 	// We will use this FileManager to deal with the file.
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 
@@ -54,8 +57,8 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData* &WorldData
 		UE_LOG(LogTemp, Error, TEXT("World size cannot have a negative number!"));
 		return false;
 	}
-	WorldDataRef = new FWorldData(ValueX, ValueY);
-	if(FileContentSplit.Num() -1 != WorldDataRef->WorldSizeY)
+	WorldDataRef = FWorldData(ValueX, ValueY);
+	if(FileContentSplit.Num() -1 != WorldDataRef.WorldSizeY)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Not enough Building Heights in Y axis!"));
 		return false;
@@ -65,7 +68,7 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData* &WorldData
 	{
 		TArray<FString> BuildingHeights;
 		FileContentSplit[i].ParseIntoArray(BuildingHeights, TEXT(","));
-		if(BuildingHeights.Num() != WorldDataRef->WorldSizeX)
+		if(BuildingHeights.Num() != WorldDataRef.WorldSizeX)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Not enough Building Heights in X axis for row %d!"), i);
 			return false;
@@ -78,7 +81,7 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData* &WorldData
 				UE_LOG(LogTemp, Error, TEXT("Height cannot be a negative number!"));
 				return false;
 			}
-			WorldDataRef->BuildingHeightMatrix[i-1].push_back(Height);
+			WorldDataRef.BuildingHeightMatrix[i-1].push_back(Height);
 		}
 	}
 	

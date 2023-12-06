@@ -19,13 +19,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> BuildingActor;
-	
-	FWorldData* WorldData = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	float DistanceBetweenBuildings = 500;
