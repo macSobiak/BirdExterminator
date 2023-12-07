@@ -3,6 +3,8 @@
 
 #include "Bird.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 // Sets default values
 ABird::ABird()
 {
@@ -29,6 +31,10 @@ void ABird::BeginPlay()
 		CollisionPredictorBoxUnder->OnComponentBeginOverlap.AddDynamic(this, &ABird::OnOverlapCollisionPredictorBeginBottom);
 		CollisionPredictorBoxUnder->OnComponentEndOverlap.AddDynamic(this, &ABird::OnOverlapCollisionPredictorEndBottom);
 	}
+
+	MeshComponent = FindComponentByClass<UStaticMeshComponent>();
+	MeshComponent->OnComponentHit.AddDynamic(this, &ABird::OnHit);
+
 }
 
 void ABird::OnOverlapCollisionPredictorBeginFront(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -53,13 +59,45 @@ void ABird::OnOverlapCollisionPredictorEndBottom(UPrimitiveComponent* Overlapped
 	CurrentTurnSpeedBottom = 0;
 }
 
+
+void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	if(!IsOnHitCooldown)
+	{
+		MeshComponent->AddImpulse(GetActorForwardVector() * InitialVelocity * 10);
+		MeshComponent->SetEnableGravity(true);
+	}
+	
+	IsOnHitCooldown = true;
+}
+
 // Called every frame
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(GetActorLocation() + GetActorForwardVector() * DefaultVelocity, true);
-	SetActorRotation(GetActorRotation() + (FRotator(CurrentTurnSpeedBottom,CurrentTurnSpeedFront, 0.0f) * TurnSpeed));
+	if(IsOnHitCooldown)
+	{
+		if((CurrentCooldown += DeltaTime) >= HitCooldown)
+		{
+			IsOnHitCooldown = false;
+			CurrentCooldown = 0;
+			MeshComponent->SetEnableGravity(false);
+
+			MeshComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
+			MeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::Zero());
+		}
+	}
+	else
+	{
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (InitialVelocity * DeltaTime), true);
+		auto rotatore = (FRotator(CurrentTurnSpeedBottom,CurrentTurnSpeedFront, 0.0f) * (TurnSpeed * DeltaTime));
+		UE_LOG(LogTemp, Error, TEXT("rot: %s"), *rotatore.ToString())
+		AddActorLocalRotation(rotatore);
+	}
+
+
 
 }
 
