@@ -37,6 +37,12 @@ class BIRDEXTERMINATOR_API ABirdExterminatorCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ShootAction;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ShootBirdClass;
+
+	UPROPERTY(EditAnywhere)
+	FVector SpawnOffset;
+
 public:
 	// Sets default values for this character's properties
 	ABirdExterminatorCharacter();

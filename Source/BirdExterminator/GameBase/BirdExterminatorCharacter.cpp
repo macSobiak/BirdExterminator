@@ -6,6 +6,9 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "BirdExterminator/World/Bird.h"
+#include "GameFramework/DefaultPawn.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 // Sets default values
 ABirdExterminatorCharacter::ABirdExterminatorCharacter()
@@ -83,6 +86,36 @@ void ABirdExterminatorCharacter::Look(const FInputActionValue& Value)
 
 void ABirdExterminatorCharacter::ShootPredatorBird(const FInputActionValue& Value)
 {
+	if (ShootBirdClass != nullptr)
+	{
+		UWorld* const World = GetWorld();
+		if (World != nullptr)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(SpawnOffset);
+	
+			//Set Spawn Collision Handling Override
+			FActorSpawnParameters ActorSpawnParams;
+			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+			// Spawn the projectile at the muzzle 
+			auto PawnSpawned = World->SpawnActor(ShootBirdClass, &SpawnLocation, &SpawnRotation, ActorSpawnParams);
+			// if(PawnSpawned != nullptr)
+			// {
+			// 	auto Bird = Cast<ABird>(PawnSpawned);
+			// 	Bird->GetMovementComponent()->Velocity = GetActorForwardVector() * 1000;
+			// }
 
+		}
+	}
+	
+	// // Try and play the sound if specified
+	// if (FireSound != nullptr)
+	// {
+	// 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
+	// }
+		
 }
 
