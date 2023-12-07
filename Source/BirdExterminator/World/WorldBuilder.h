@@ -21,8 +21,13 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+
+	void SpawnInvisibleWall(const FVector &SpawnLocation, const FVector &ScaleVector);
+	void SpawnInvisibleWalls(const FVector &WorldSize, const float& MaxBuildingHeight);
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> BuildingActor;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> InvisibleWallActor;
 	
 	UPROPERTY(EditAnywhere)
 	float DistanceBetweenBuildings = 500;
