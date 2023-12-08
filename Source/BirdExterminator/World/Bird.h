@@ -5,20 +5,13 @@
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
+#include "../BirdsLogic/BirdBehavior.h"
 #include "Bird.generated.h"
 
 class UCollisionPredictor;
 class ABirdFlock;
-enum class EColliderType : uint8;
 
-enum EBirdState
-{
-	FreeFlight,
-	CollisionDetected,
-	RecoveryAfterHit,
-	Follow,
-	OutOfBounds
-};
+enum class EColliderType : uint8;
 
 UCLASS()
 class BIRDEXTERMINATOR_API ABird : public AStaticMeshActor
@@ -35,6 +28,7 @@ protected:
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void RecoverFromHit();
 
 public:	
 	// Called every frame
@@ -43,9 +37,7 @@ public:
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
 	void Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector3f &PlayableAreaRef);
-	
-	UPROPERTY(EditAnywhere)
-	float InitialVelocity = 100;
+	void SetAppearance(UMaterial* MaterialToSet);
 	
 private:
 	FRotator TurnSpeedRotator = FRotator(0, 0, 0);
@@ -57,18 +49,22 @@ private:
 	TArray<EColliderType> CollidersToIgnore;
 
 	UPROPERTY()
-	ABirdFlock *BirdFlockToFollow;
-	
-	EBirdState BirdState = FreeFlight;
+	UMaterial* StoredMaterial = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	float TurnSpeed = 10;
+	BirdBehavior* BirdBehaviorDefinition;
+	
+	UPROPERTY()
+	UMaterialInstanceDynamic* DynamicMaterialInst;
 
 	UPROPERTY(EditAnywhere)
 	float HitCooldown = 2;
+	
 	float CurrentCooldown = 0;
+	bool IsOnHitCooldown = false;
+	bool IsInitialized = false;
+
+public:
+	UPROPERTY(EditAnywhere)
+	float InitialVelocity = 100;
 	
-	int PlaceInFlock = 0;
-	
-	FVector3f PlayableArea;
 };

@@ -13,6 +13,12 @@ ABird::ABird()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Script/Engine.Material'/Game/Materials/M_Prey.M_Prey'"));
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterial = FoundMaterial.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -21,85 +27,80 @@ void ABird::BeginPlay()
 	Super::BeginPlay();
 }
 
-
-void ABird::Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector3f &PlayableAreaRef)
+void ABird::Initialize(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef)
 {
-	PlayableArea = PlayableAreaRef;
+	//PlayableArea = PlayableAreaRef;
 
 	MeshComponent = FindComponentByClass<UStaticMeshComponent>();
 	MeshComponent->OnComponentHit.AddDynamic(this, &ABird::OnHit);
 
-	BirdFlockToFollow = BirdFlock;
-	PlaceInFlock = PlaceInFlockRef;
+	//BirdFlockToFollow = BirdFlock;
+	//PlaceInFlock = PlaceInFlockRef;
+
+	SetAppearance(StoredMaterial);
+	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef);
+
+	IsInitialized = true;
 }
 
+void ABird::SetAppearance(UMaterial* MaterialToSet)
+{
+	DynamicMaterialInst = UMaterialInstanceDynamic::Create(MaterialToSet, MeshComponent);
+	MeshComponent->SetMaterial(0, DynamicMaterialInst);
+}
 
 
 void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                   FVector NormalImpulse, const FHitResult& Hit)
 {
-	if(BirdState != RecoveryAfterHit)
+	if(!IsOnHitCooldown)
 	{
 		MeshComponent->AddImpulse(GetActorForwardVector() * InitialVelocity * 5);
 		MeshComponent->SetEnableGravity(true);
 	}
 	
-	BirdState = RecoveryAfterHit;
+	IsOnHitCooldown = true;
 }
 
-// Called every frame
+
+void ABird::RecoverFromHit()
+{
+	IsOnHitCooldown = false;
+	CurrentCooldown = 0;
+
+	FVector RecoveryPosition = GetActorLocation() + FVector(0,0,1);
+	SetActorRotation((RecoveryPosition - GetActorLocation()).Rotation());
+	SetActorLocation(RecoveryPosition);
+			
+	MeshComponent->SetEnableGravity(false);
+			
+	MeshComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
+	MeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::Zero());
+}
+
 void ABird::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(BirdState == RecoveryAfterHit)
+	if(!IsInitialized)
+		return;
+	
+	if(IsOnHitCooldown)
 	{
 		if((CurrentCooldown += DeltaTime) >= HitCooldown)
 		{
-			BirdState = FreeFlight;
-			CurrentCooldown = 0;
-
-			FVector RecoveryPosition = GetActorLocation() + FVector(0,0,1);
-			SetActorRotation((RecoveryPosition - GetActorLocation()).Rotation());
-			SetActorLocation(RecoveryPosition);
-			
-			MeshComponent->SetEnableGravity(false);
-			
-			MeshComponent->SetAllPhysicsLinearVelocity(FVector::Zero());
-			MeshComponent->SetPhysicsAngularVelocityInDegrees(FVector::Zero());
+			RecoverFromHit();
 		}
 	}
 	else
 	{
+		AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->TurnSpeed * DeltaTime));
+
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (InitialVelocity * DeltaTime), true);
-		AddActorLocalRotation(TurnSpeedRotator * (TurnSpeed * DeltaTime));
 
-		if(GetActorLocation().X < -PlayableArea.X/2 || GetActorLocation().X > PlayableArea.X/2
-			|| GetActorLocation().Y < -PlayableArea.Y/2 || GetActorLocation().Y > PlayableArea.Y/2
-			|| GetActorLocation().Z > PlayableArea.Z)
-		{
-			BirdState = OutOfBounds;
-
-			auto NewDir = FVector(0, 0, PlayableArea.Z / 2) - GetActorLocation();
-			auto TargetRotation = NewDir.Rotation();
-			auto NewRotation = FMath::RInterpConstantTo(GetActorRotation(), TargetRotation, DeltaTime, TurnSpeed);
-			SetActorRotation(NewRotation);
-		}
-		else
-		{
-			BirdState = FreeFlight;
-		}
-
-		if(BirdState == FreeFlight && TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)
-		{
-			if(BirdFlockToFollow)
-			{
-				auto NewDir = BirdFlockToFollow->GetPlaceInFlock(PlaceInFlock) - GetActorLocation();
-				auto TargetRotation = NewDir.Rotation();
-				auto NewRotation = FMath::RInterpConstantTo(GetActorRotation(), TargetRotation, DeltaTime, TurnSpeed);
-				SetActorRotation(NewRotation);
-			}
-		}
+		//if no collision avoidance happens
+		if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)
+			SetActorRotation(BirdBehaviorDefinition->GetDirectionConditional(DeltaTime, GetActorLocation(), GetActorRotation()));
 	}
 }
 
@@ -120,8 +121,6 @@ void ABird::RegisterModifier(const FRotator& VectorOffset, UCollisionPredictor *
 	CollidersToIgnore.Add(CollisionPredictor->ColliderTypeToIgnore);
 
 	TurnSpeedRotator += VectorOffset;
-	UE_LOG(LogTemp, Error, TEXT("REJESTRUJE %d, %s"), (int)CollisionPredictor->ColliderType, *TurnSpeedRotator.ToString());
-
 }
 
 void ABird::UnregisterModifier(const FRotator& VectorOffset, UCollisionPredictor *CollisionPredictor)
@@ -142,7 +141,6 @@ void ABird::UnregisterModifier(const FRotator& VectorOffset, UCollisionPredictor
 		CollidersToIgnore.Remove(CollisionPredictor->ColliderTypeToIgnore);
 
 		TurnSpeedRotator -= VectorOffset;
-		UE_LOG(LogTemp, Error, TEXT("UNREJESTR %d, %s"), (int)CollisionPredictor->ColliderType, *TurnSpeedRotator.ToString());
 	}
 }
 
