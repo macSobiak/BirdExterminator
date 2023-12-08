@@ -2,7 +2,6 @@
 
 
 #include "WorldBuilder.h"
-
 #include "WorldConfigFileParser.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,7 +14,7 @@ AWorldBuilder::AWorldBuilder()
 
 }
 
-void AWorldBuilder::GenerateWorld(FVector &PlayableArea)
+void AWorldBuilder::GenerateWorld(FVector3f &PlayableArea)
 {
 	WorldConfigFileParser* FileParser = new WorldConfigFileParser;
 	FWorldData WorldData;
@@ -64,7 +63,7 @@ void AWorldBuilder::GenerateWorld(FVector &PlayableArea)
 		IsMiddlePointOccupied ? (BuildingSizeY + DistanceBetweenBuildings)/2 : 0,
 		100));
 
-	PlayableArea = FVector(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
+	PlayableArea = FVector3f(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
 }
 

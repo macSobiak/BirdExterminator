@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WorldConfigFileParser.h"
 #include "GameFramework/Actor.h"
 #include "WorldBuilder.generated.h"
 
@@ -15,7 +14,7 @@ class BIRDEXTERMINATOR_API AWorldBuilder : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AWorldBuilder();
-	void GenerateWorld(FVector &PlayableArea);
+	void GenerateWorld(FVector3f &PlayableArea);
 
 protected:
 	// Called when the game starts or when spawned

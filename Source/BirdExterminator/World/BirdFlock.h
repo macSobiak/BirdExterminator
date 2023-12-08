@@ -18,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	ABirdFlock();
 	void SpawnBirdFlock();
-	void Initialize(FVector &PlayableAreaRef);
+	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount);
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,16 +31,14 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABird> BirdBlueprint;
-	
 	TArray<ABird*> BirdArray;
-	FVector PlayableArea;
-
-	UPROPERTY(EditAnywhere)
-	int InitialBirdCount = 7;
-
-	TMap<int, FVector> PlaceInFlockMap;
+	TArray<FVector> PlaceInFlockMap;
 
 	FVector FlockFlightDestination;
+	UPROPERTY(EditAnywhere)
+	FVector3f PlayableArea;
 
+	int InitialBirdCount = 7;
 	bool IsInitialized = false;
+
 };

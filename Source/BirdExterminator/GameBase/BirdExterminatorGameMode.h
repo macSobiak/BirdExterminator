@@ -22,5 +22,5 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
 public:
-	FVector PlayableArea;
+	FVector3f PlayableArea;
 };

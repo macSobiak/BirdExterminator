@@ -42,8 +42,11 @@ public:
 	void RegisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
-	void Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector &PlayableAreaRef);
-
+	void Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector3f &PlayableAreaRef);
+	
+	UPROPERTY(EditAnywhere)
+	float InitialVelocity = 100;
+	
 private:
 	FRotator TurnSpeedRotator = FRotator(0, 0, 0);
 
@@ -60,14 +63,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float TurnSpeed = 10;
-	UPROPERTY(EditAnywhere)
-	float InitialVelocity = 100;
-	
+
 	UPROPERTY(EditAnywhere)
 	float HitCooldown = 2;
 	float CurrentCooldown = 0;
 	
 	int PlaceInFlock = 0;
 	
-	FVector PlayableArea;
+	FVector3f PlayableArea;
 };

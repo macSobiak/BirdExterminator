@@ -22,7 +22,7 @@ void ABird::BeginPlay()
 }
 
 
-void ABird::Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector &PlayableAreaRef)
+void ABird::Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector3f &PlayableAreaRef)
 {
 	PlayableArea = PlayableAreaRef;
 
@@ -100,14 +100,7 @@ void ABird::Tick(float DeltaTime)
 				SetActorRotation(NewRotation);
 			}
 		}
-
-
-		
-
 	}
-
-
-
 }
 
 void ABird::RegisterModifier(const FRotator& VectorOffset, UCollisionPredictor *CollisionPredictor)

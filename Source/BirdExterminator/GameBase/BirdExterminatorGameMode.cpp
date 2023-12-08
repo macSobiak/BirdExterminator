@@ -23,7 +23,7 @@ void ABirdExterminatorGameMode::BeginPlay()
 		RandomSpawnPoint.Y = FMath::RandRange(-PlayableArea.Y / 2, PlayableArea.Y / 2);
 		RandomSpawnPoint.Z = FMath::RandRange(PlayableArea.Z/2, PlayableArea.Z);
 		
-		Cast<ABirdFlock>(GetWorld()->SpawnActor(BirdFlockBlueprint, &RandomSpawnPoint))->Initialize(PlayableArea);
+		Cast<ABirdFlock>(GetWorld()->SpawnActor(BirdFlockBlueprint, &RandomSpawnPoint))->Initialize(PlayableArea, FMath::RandRange(5,8));
 	}
 
 
