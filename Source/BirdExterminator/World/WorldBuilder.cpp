@@ -4,7 +4,6 @@
 #include "WorldBuilder.h"
 
 #include "WorldConfigFileParser.h"
-#include "Engine/BlockingVolume.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -16,11 +15,8 @@ AWorldBuilder::AWorldBuilder()
 
 }
 
-// Called when the game starts or when spawned
-void AWorldBuilder::BeginPlay()
+void AWorldBuilder::GenerateWorld(FVector &PlayableArea)
 {
-	Super::BeginPlay();
-
 	WorldConfigFileParser* FileParser = new WorldConfigFileParser;
 	FWorldData WorldData;
 	if(!FileParser->TryGetWorldDataFromConfigFile(WorldData))
@@ -68,7 +64,14 @@ void AWorldBuilder::BeginPlay()
 		IsMiddlePointOccupied ? (BuildingSizeY + DistanceBetweenBuildings)/2 : 0,
 		100));
 
+	PlayableArea = FVector(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
+}
+
+// Called when the game starts or when spawned
+void AWorldBuilder::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const float& MaxBuildingHeight)
@@ -91,13 +94,6 @@ void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const float& M
 	SpawnInvisibleWall(Bounds, Scale);
 
 	Bounds.Y = WorldSize.Y / 2;
-	SpawnInvisibleWall(Bounds, Scale);
-
-	Bounds.X = 0;
-	Bounds.Y = 0;
-	Bounds.Z = MaxBuildingHeight * 100 + DistanceBetweenBuildings;
-	Scale.Y = WorldSize.Y / 100;
-	Scale.Z = 1;
 	SpawnInvisibleWall(Bounds, Scale);
 }
 

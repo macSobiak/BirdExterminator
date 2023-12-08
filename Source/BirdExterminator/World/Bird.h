@@ -3,10 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/BoxComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
 #include "Bird.generated.h"
+
+class UCollisionPredictor;
+class ABirdFlock;
+enum class EColliderType : uint8;
+
+enum EBirdState
+{
+	FreeFlight,
+	CollisionDetected,
+	RecoveryAfterHit,
+	Follow,
+	OutOfBounds
+};
 
 UCLASS()
 class BIRDEXTERMINATOR_API ABird : public AStaticMeshActor
@@ -20,15 +32,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	UFUNCTION()
-	void OnOverlapCollisionPredictorBeginFront(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnOverlapCollisionPredictorEndFront(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	void OnOverlapCollisionPredictorBeginBottom(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnOverlapCollisionPredictorEndBottom(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -36,34 +39,35 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void RegisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
+	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
+
+	void Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector &PlayableAreaRef);
 
 private:
-	UPROPERTY(EditAnywhere)
-	float InitialVelocity = 100;
-
-	UPROPERTY(EditAnywhere)
-	FComponentReference CollisionPredictorBoxAheadReference;
-	UPROPERTY(EditAnywhere)
-	FComponentReference CollisionPredictorBoxUnderReference;
-	
-	UPROPERTY()
-	UBoxComponent *CollisionPredictorBoxAhead;
-	UPROPERTY()
-	UBoxComponent *CollisionPredictorBoxUnder;
+	FRotator TurnSpeedRotator = FRotator(0, 0, 0);
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent *MeshComponent;
+	UStaticMeshComponent* MeshComponent;
+
+	TArray<EColliderType> ActiveColliders;
+	TArray<EColliderType> CollidersToIgnore;
+
+	UPROPERTY()
+	ABirdFlock *BirdFlockToFollow;
+	
+	EBirdState BirdState = FreeFlight;
 
 	UPROPERTY(EditAnywhere)
 	float TurnSpeed = 10;
-
-	float CurrentTurnSpeedFront = 0;
-	float CurrentTurnSpeedBottom = 0;
-
+	UPROPERTY(EditAnywhere)
+	float InitialVelocity = 100;
+	
 	UPROPERTY(EditAnywhere)
 	float HitCooldown = 2;
-
 	float CurrentCooldown = 0;
-	bool IsOnHitCooldown = false;
-
+	
+	int PlaceInFlock = 0;
+	
+	FVector PlayableArea;
 };

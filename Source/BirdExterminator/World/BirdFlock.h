@@ -12,10 +12,13 @@ UCLASS()
 class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 {
 	GENERATED_BODY()
-	
+
+	void GenerateNewDestinationPoint();
 public:	
 	// Sets default values for this actor's properties
 	ABirdFlock();
+	void SpawnBirdFlock();
+	void Initialize(FVector &PlayableAreaRef);
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,11 +27,20 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	FVector GetPlaceInFlock(const int &PlaceInFlock);
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABird> BirdBlueprint;
+	
 	TArray<ABird*> BirdArray;
+	FVector PlayableArea;
 
 	UPROPERTY(EditAnywhere)
 	int InitialBirdCount = 7;
 
-	FVector FlockFlightDirection = FVector(1,0,0);
+	TMap<int, FVector> PlaceInFlockMap;
+
+	FVector FlockFlightDestination;
+
+	bool IsInitialized = false;
 };

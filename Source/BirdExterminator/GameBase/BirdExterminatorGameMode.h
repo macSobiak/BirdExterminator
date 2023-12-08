@@ -6,12 +6,21 @@
 #include "GameFramework/GameModeBase.h"
 #include "BirdExterminatorGameMode.generated.h"
 
-/**
- * 
- */
+class AWorldBuilder;
+class ABirdFlock;
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdExterminatorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	AWorldBuilder* WorldBuilder;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
+public:
+	FVector PlayableArea;
 };
