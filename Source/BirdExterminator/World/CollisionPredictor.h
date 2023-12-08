@@ -51,4 +51,6 @@ public:
 
 	UPROPERTY()
 	TArray<AActor*> OverlappingActors;
+
+	int CollidedObjectsCount = 0;
 };

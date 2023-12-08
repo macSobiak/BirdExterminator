@@ -38,7 +38,7 @@ void ABirdFlock::SpawnBirdFlock()
 
 		auto SpawnPosition = GetActorLocation() + SpawnPositionOffset;
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
-		PlaceInFlockMap.Add(i, SpawnPositionOffset + FVector(0,50,0));
+		PlaceInFlockMap.Add(i, SpawnPositionOffset + FVector(0,10,0));
 		
 		BirdSpawned->Initialize(this, i, PlayableArea);
 

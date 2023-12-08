@@ -40,7 +40,7 @@ void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrim
 {
 	if(BirdState != RecoveryAfterHit)
 	{
-		MeshComponent->AddImpulse(GetActorForwardVector() * InitialVelocity);
+		MeshComponent->AddImpulse(GetActorForwardVector() * InitialVelocity * 5);
 		MeshComponent->SetEnableGravity(true);
 	}
 	
@@ -58,6 +58,11 @@ void ABird::Tick(float DeltaTime)
 		{
 			BirdState = FreeFlight;
 			CurrentCooldown = 0;
+
+			FVector RecoveryPosition = GetActorLocation() + FVector(0,0,1);
+			SetActorRotation((RecoveryPosition - GetActorLocation()).Rotation());
+			SetActorLocation(RecoveryPosition);
+			
 			MeshComponent->SetEnableGravity(false);
 			
 			MeshComponent->SetAllPhysicsLinearVelocity(FVector::Zero());

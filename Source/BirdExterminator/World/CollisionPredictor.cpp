@@ -17,10 +17,13 @@ void UCollisionPredictor::OnOverlapCollisionPredictorBegin(UPrimitiveComponent* 
 {
 	if(OtherActor == GetOwner())
 		return;
-	
-	GetOverlappingActors(OverlappingActors);
-	if(OverlappingActors.Num() == 1)
+
+	//GetOverlappingActors(OverlappingActors);
+	//if(OverlappingActors.Num() == 1)
+	if(CollidedObjectsCount == 0)
 		BirdOwner->RegisterModifier(DirectionToSet, this);
+
+	CollidedObjectsCount++;
 }
 
 void UCollisionPredictor::OnOverlapCollisionPredictorEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -28,9 +31,12 @@ void UCollisionPredictor::OnOverlapCollisionPredictorEnd(UPrimitiveComponent* Ov
 {
 	if(OtherActor == GetOwner())
 		return;
+
+	CollidedObjectsCount--;
+	//GetOverlappingActors(OverlappingActors);
+	//if(OverlappingActors.Num() == 0)
 	
-	GetOverlappingActors(OverlappingActors);
-	if(OverlappingActors.Num() == 0)
+	if(CollidedObjectsCount == 0)
 		BirdOwner->UnregisterModifier(DirectionToSet, this);
 }
 
