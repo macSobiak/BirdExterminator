@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
-#include "../BirdsLogic/BirdBehavior.h"
 #include "Bird.generated.h"
 
 class UCollisionPredictor;
 class ABirdFlock;
+class BirdBehavior;
 
 enum class EColliderType : uint8;
 
@@ -36,7 +36,10 @@ public:
 	void RegisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
-	void Initialize(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, FVector3f &PlayableAreaRef);
+	void InitializeBase(UMaterial* MaterialToSet);
+	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef);
+	void InitializeAsPredator();
+	
 	void SetAppearance(UMaterial* MaterialToSet);
 	
 private:
@@ -49,8 +52,10 @@ private:
 	TArray<EColliderType> CollidersToIgnore;
 
 	UPROPERTY()
-	UMaterial* StoredMaterial = nullptr;
-
+	UMaterial* StoredMaterialPrey = nullptr;
+	UPROPERTY()
+	UMaterial* StoredMaterialPredator = nullptr;
+	
 	BirdBehavior* BirdBehaviorDefinition;
 	
 	UPROPERTY()
@@ -62,9 +67,5 @@ private:
 	float CurrentCooldown = 0;
 	bool IsOnHitCooldown = false;
 	bool IsInitialized = false;
-
-public:
-	UPROPERTY(EditAnywhere)
-	float InitialVelocity = 100;
 	
 };

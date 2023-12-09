@@ -17,7 +17,7 @@ class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABirdFlock();
-	void SpawnBirdFlock();
+	void SpawnBirds(const int &BirdCount);
 	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount);
 
 protected:
@@ -38,7 +38,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector3f PlayableArea;
 
-	int InitialBirdCount = 7;
 	bool IsInitialized = false;
 
 };

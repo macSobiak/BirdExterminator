@@ -20,12 +20,12 @@ ABirdFlock::ABirdFlock()
 
 }
 
-void ABirdFlock::SpawnBirdFlock()
+void ABirdFlock::SpawnBirds(const int &BirdCount)
 {
 	FVector SpawnPositionOffset = FVector::Zero();
 
-	const float Angle = 360 / (InitialBirdCount - 1);
-	for (int i = 0; i < InitialBirdCount; ++i)
+	const float Angle = 360 / (BirdCount - 1);
+	for (int i = 0; i < BirdCount; ++i)
 	{
 		if(i != 0)
 		{
@@ -39,7 +39,7 @@ void ABirdFlock::SpawnBirdFlock()
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
 		PlaceInFlockMap.Emplace(SpawnPositionOffset + FVector(0,10,0));
 		
-		BirdSpawned->Initialize(this, i, PlayableArea);
+		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
 		BirdArray.Add(BirdSpawned);
 
 	}
@@ -47,13 +47,12 @@ void ABirdFlock::SpawnBirdFlock()
 
 void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount)
 {
-	InitialBirdCount = BirdCount;
 	BirdArray.Reserve(BirdCount);
 	PlaceInFlockMap.Reserve(BirdCount);
 
 	PlayableArea = PlayableAreaRef;
 	
-	SpawnBirdFlock();
+	SpawnBirds(BirdCount);
 	GenerateNewDestinationPoint();
 
 	IsInitialized = true;

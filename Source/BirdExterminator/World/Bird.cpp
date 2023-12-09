@@ -4,7 +4,9 @@
 #include "Bird.h"
 
 #include "BirdFlock.h"
+#include "../BirdsLogic/PreyBehavior.h"
 #include "CollisionPredictor.h"
+#include "BirdExterminator/BirdsLogic/PredatorBehavior.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -17,8 +19,15 @@ ABird::ABird()
 	ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Script/Engine.Material'/Game/Materials/M_Prey.M_Prey'"));
 	if (FoundMaterial.Succeeded())
 	{
-		StoredMaterial = FoundMaterial.Object;
+		StoredMaterialPrey = FoundMaterial.Object;
 	}
+
+	FoundMaterial = (TEXT("/Script/Engine.Material'/Game/Materials/M_Predator.M_Predator'"));
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterialPredator = FoundMaterial.Object;
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -27,20 +36,56 @@ void ABird::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ABird::Initialize(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef)
+void ABird::InitializeBase(UMaterial* MaterialToSet)
 {
-	//PlayableArea = PlayableAreaRef;
-
-	MeshComponent = FindComponentByClass<UStaticMeshComponent>();
-	MeshComponent->OnComponentHit.AddDynamic(this, &ABird::OnHit);
-
-	//BirdFlockToFollow = BirdFlock;
-	//PlaceInFlock = PlaceInFlockRef;
-
-	SetAppearance(StoredMaterial);
-	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef);
-
+	if(!MeshComponent)
+	{
+		MeshComponent = FindComponentByClass<UStaticMeshComponent>();
+		MeshComponent->OnComponentHit.AddDynamic(this, &ABird::OnHit);
+	}
+	SetAppearance(MaterialToSet);
+	
 	IsInitialized = true;
+}
+
+void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef)
+{
+	if(BirdBehaviorDefinition)
+	{
+		delete BirdBehaviorDefinition;
+	}
+	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef);
+	
+	InitializeBase(StoredMaterialPrey);
+
+	MeshComponent->SetCollisionObjectType(ECC_GameTraceChannel2);
+
+	TArray<UCollisionPredictor*> other;
+	GetComponents(UCollisionPredictor::StaticClass(),other);
+	for(int i = 0; i < other.Num(); ++i)
+	{
+		other[i]->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Overlap);
+	}
+}
+
+void ABird::InitializeAsPredator()
+{
+	if(BirdBehaviorDefinition)
+	{
+		delete BirdBehaviorDefinition;
+	}
+	BirdBehaviorDefinition = new PredatorBehavior(this);
+
+	InitializeBase(StoredMaterialPredator);
+
+	MeshComponent->SetCollisionObjectType(ECC_GameTraceChannel3);
+
+	TArray<UCollisionPredictor*> other;
+	GetComponents(UCollisionPredictor::StaticClass(),other);
+	for(int i = 0; i < other.Num(); ++i)
+	{
+		other[i]->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);
+	}
 }
 
 void ABird::SetAppearance(UMaterial* MaterialToSet)
@@ -55,7 +100,7 @@ void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrim
 {
 	if(!IsOnHitCooldown)
 	{
-		MeshComponent->AddImpulse(GetActorForwardVector() * InitialVelocity * 5);
+		MeshComponent->AddImpulse(GetActorForwardVector() * BirdBehaviorDefinition->InitialVelocity * 5);
 		MeshComponent->SetEnableGravity(true);
 	}
 	
@@ -96,7 +141,7 @@ void ABird::Tick(float DeltaTime)
 	{
 		AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->TurnSpeed * DeltaTime));
 
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (InitialVelocity * DeltaTime), true);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (BirdBehaviorDefinition->InitialVelocity * DeltaTime), true);
 
 		//if no collision avoidance happens
 		if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)

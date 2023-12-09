@@ -7,7 +7,7 @@
 #include "BirdExterminatorGameMode.generated.h"
 
 class AWorldBuilder;
-class ABirdFlock;
+class ABirdsController;
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdExterminatorGameMode : public AGameModeBase
 {
@@ -19,8 +19,11 @@ protected:
 private:
 	UPROPERTY()
 	AWorldBuilder* WorldBuilder;
+
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
+	TSubclassOf<ABirdsController> BirdsControllerBlueprint;
 public:
 	FVector3f PlayableArea;
+	UPROPERTY()
+	ABirdsController* BirdsController;
 };
