@@ -8,6 +8,8 @@
 
 class ABird;
 
+DECLARE_EVENT(ABirdFlock, FOnBirdInFlockDestroyed);
+
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 {
@@ -28,6 +30,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	FOnBirdInFlockDestroyed OnBirdInFlockDestroyedChanged;
 	FVector GetPlaceInFlock(const int &PlaceInFlock);
 
 	UPROPERTY(EditAnywhere)
@@ -40,5 +43,6 @@ public:
 	FVector3f PlayableArea;
 
 	bool IsInitialized = false;
+	int TrackedBirdCount = 0;
 
 };

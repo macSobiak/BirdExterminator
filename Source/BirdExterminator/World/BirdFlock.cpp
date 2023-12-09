@@ -23,6 +23,7 @@ ABirdFlock::ABirdFlock()
 
 void ABirdFlock::SpawnBirds(const int &BirdCount)
 {
+	TrackedBirdCount = BirdCount;
 	FVector SpawnPositionOffset = FVector::Zero();
 
 	const float Angle = 360 / (BirdCount - 1);
@@ -43,7 +44,6 @@ void ABirdFlock::SpawnBirds(const int &BirdCount)
 		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
 		BirdSpawned->OnBirdDestroyedEvent.AddUObject(this, &ABirdFlock::HandleBirdDestroyed);
 		BirdArray.Add(BirdSpawned);
-
 	}
 }
 
@@ -51,6 +51,7 @@ void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
 {
 	Bird->OnBirdDestroyedEvent.RemoveAll(this);
 	BirdArray.Remove(Bird);
+	OnBirdInFlockDestroyedChanged.Broadcast();
 }
 
 void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount)

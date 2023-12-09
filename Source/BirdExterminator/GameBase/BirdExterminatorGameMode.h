@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "BirdExterminatorGameMode.generated.h"
 
+class AUIController;
 class AWorldBuilder;
 class ABirdsController;
 UCLASS()
@@ -22,8 +23,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABirdsController> BirdsControllerBlueprint;
+
+
 public:
 	FVector3f PlayableArea;
 	UPROPERTY()
 	ABirdsController* BirdsController;
+	UPROPERTY()
+	AUIController* UIController;
 };

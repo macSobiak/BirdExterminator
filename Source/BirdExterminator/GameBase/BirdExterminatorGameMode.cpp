@@ -5,6 +5,7 @@
 
 #include "BirdExterminator/World/WorldBuilder.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
+#include "BirdExterminator/UI/UIController.h"
 
 
 #include "Kismet/GameplayStatics.h"
@@ -21,5 +22,6 @@ void ABirdExterminatorGameMode::BeginPlay()
 	BirdsController->Initialize(PlayableArea, 10);;
 
 
-	
+	UIController = Cast<AUIController>(UGameplayStatics::GetActorOfClass(this, AUIController::StaticClass()));
+	UIController->InitializeInterfaceElements(BirdsController);
 }

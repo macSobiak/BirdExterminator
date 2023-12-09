@@ -100,20 +100,27 @@ void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 		RandomSpawnPoint.Z = FMath::RandRange(PlayableArea.Z/2, PlayableArea.Z);
 		
 		auto BirdFlockSpawned = Cast<ABirdFlock>(GetWorld()->SpawnActor(BirdFlockBlueprint, &RandomSpawnPoint));
-		BirdFlockSpawned->Initialize(PlayableArea, FMath::RandRange(5,8));
+		int BirdsToSpawn = FMath::RandRange(5,8);
+		BirdFlockSpawned->Initialize(PlayableArea, BirdsToSpawn);
 
 		BirdFlocksArray.Add(BirdFlockSpawned);
+
+		PreyBirdsAlive += BirdsToSpawn;
+		
+		BirdFlockSpawned->OnBirdInFlockDestroyedChanged.AddUObject(this, &ABirdsController::BirdInFlockDestroyed);
 	}
 }
 
 void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 {
 	FreeBirdsArray.Add(Bird);
+	OnBirdCountChangedEvent.Broadcast(++PreyBirdsAlive);
 	Bird->OnBirdDestroyedEvent.AddUObject(this, &ABirdsController::HandleBirdDestroyed);
 }
 
 void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 {
+	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
 	PredatorsArray.Add(Bird);
 }
 
@@ -125,6 +132,27 @@ void ABirdsController::UnregisterPredator(ABird* Bird)
 void ABirdsController::HandleBirdDestroyed(ABird* Bird)
 {
 	Bird->OnBirdDestroyedEvent.RemoveAll(this);
+	OnBirdCountChangedEvent.Broadcast(--PreyBirdsAlive);
 	FreeBirdsArray.Remove(Bird);
+}
+
+void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)
+{
+	if(PredatorBirdsAvailable <= 0)
+		return;
+	
+	UWorld* const World = GetWorld();
+	if (World != nullptr)
+	{
+		auto ActorSpawned = World->SpawnActor(PredatorBirdClass, &SpawnLocation, &SpawnRotator, SpawnParameters);
+		auto BirdSpawned = Cast<ABird>(ActorSpawned);
+		BirdSpawned->InitializeAsPredator(PlayableArea);
+		RegisterAsPredatorBird(BirdSpawned);
+	}
+}
+
+void ABirdsController::BirdInFlockDestroyed()
+{
+	OnBirdCountChangedEvent.Broadcast(--PreyBirdsAlive);
 }
 

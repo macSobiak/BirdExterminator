@@ -91,30 +91,13 @@ void ABirdExterminatorCharacter::Look(const FInputActionValue& Value)
 
 void ABirdExterminatorCharacter::ShootPredatorBird(const FInputActionValue& Value)
 {
-	if (ShootBirdClass != nullptr)
-	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
-		{
-			APlayerController* PlayerController = Cast<APlayerController>(GetController());
-			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-			const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(SpawnOffset);
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+	const FVector SpawnLocation = GetActorLocation() + SpawnRotation.RotateVector(SpawnOffset);
+
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			
-			auto ActorSpawned = World->SpawnActor(ShootBirdClass, &SpawnLocation, &SpawnRotation, ActorSpawnParams);
-			auto BirdSpawned = Cast<ABird>(ActorSpawned);
-			BirdSpawned->InitializeAsPredator(GameMode->PlayableArea);
-			GameMode->BirdsController->RegisterAsPredatorBird(BirdSpawned);
-		}
-	}
-	
-	// // Try and play the sound if specified
-	// if (FireSound != nullptr)
-	// {
-	// 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
-	// }
-		
+	GameMode->BirdsController->SpawnPredatorBird(SpawnLocation, SpawnRotation, ActorSpawnParams);
 }
 

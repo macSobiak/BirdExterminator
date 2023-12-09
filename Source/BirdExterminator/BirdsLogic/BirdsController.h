@@ -8,6 +8,10 @@
 
 class ABirdFlock;
 class ABird;
+class ABirdExterminatorGameMode;
+
+DECLARE_EVENT_OneParam(ABirdsController, FOnBirdCountChanged, const int&);
+
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdsController : public AActor
 {
@@ -32,10 +36,17 @@ public:
 	void RegisterAsPredatorBird(ABird* Bird);
 	void UnregisterPredator(ABird* Bird);
 	void HandleBirdDestroyed(ABird* Bird);
+	void SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters);
+	void BirdInFlockDestroyed();
 
+	FOnBirdCountChanged OnBirdCountChangedEvent;
+	FOnBirdCountChanged OnPredatorCountChangedEvent;
 
 private:
 	void SpawnBirdFlocks(const int& BirdFlocksCount);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> PredatorBirdClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
@@ -45,5 +56,8 @@ private:
 	TArray<ABird*> FreeBirdsArray;
 
 	FVector3f PlayableArea;
+public:	
 	bool IsInitialized = false;
+	int PreyBirdsAlive = 0;
+	int PredatorBirdsAvailable = 10;
 };
