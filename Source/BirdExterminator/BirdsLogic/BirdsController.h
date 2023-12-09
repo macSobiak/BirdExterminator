@@ -7,6 +7,7 @@
 #include "BirdsController.generated.h"
 
 class ABirdFlock;
+class ABird;
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdsController : public AActor
 {
@@ -26,7 +27,13 @@ public:
 	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlocksCount);
 
 	AActor* GetNearestBird(const FVector &LocationFrom, float &Distance);
-	
+	AActor* GetNearestPredator(const FVector &LocationFrom, float &Distance);
+	void RegisterAsFreeBird(ABird* Bird);
+	void RegisterAsPredatorBird(ABird* Bird);
+	void UnregisterPredator(ABird* Bird);
+	void HandleBirdDestroyed(ABird* Bird);
+
+
 private:
 	void SpawnBirdFlocks(const int& BirdFlocksCount);
 
@@ -34,6 +41,8 @@ private:
 	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
 	
 	TArray<ABirdFlock*> BirdFlocksArray;
+	TArray<ABird*> PredatorsArray;
+	TArray<ABird*> FreeBirdsArray;
 
 	FVector3f PlayableArea;
 	bool IsInitialized = false;

@@ -11,7 +11,7 @@
 class BIRDEXTERMINATOR_API PreyBehavior : public BirdBehavior
 {
 public:
-	PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef);
+	PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef, AActor* Owner);
 	virtual ~PreyBehavior() override;
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) override;
@@ -20,7 +20,9 @@ public:
 private:
 	FRotator GetRotationToBirdFlock(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
 	
+	
 	ABirdFlock *BirdFlockToFollow;
 	int PlaceInFlock = 0;
+	float DangerDistance = 700;
 
 };

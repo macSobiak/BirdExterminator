@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "BirdExterminator/BirdsLogic/BirdsController.h"
 #include "BirdExterminator/World/Bird.h"
 #include "GameFramework/DefaultPawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -38,6 +39,8 @@ void ABirdExterminatorCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	GameMode = Cast<ABirdExterminatorGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
 // Called to bind functionality to input
@@ -100,9 +103,10 @@ void ABirdExterminatorCharacter::ShootPredatorBird(const FInputActionValue& Valu
 			FActorSpawnParameters ActorSpawnParams;
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			
-			auto BirdSpawned = World->SpawnActor(ShootBirdClass, &SpawnLocation, &SpawnRotation, ActorSpawnParams);
-			//delete it after bird testing
-			Cast<ABird>(BirdSpawned)->InitializeAsPredator(Cast<ABirdExterminatorGameMode>(UGameplayStatics::GetGameMode(this))->PlayableArea);
+			auto ActorSpawned = World->SpawnActor(ShootBirdClass, &SpawnLocation, &SpawnRotation, ActorSpawnParams);
+			auto BirdSpawned = Cast<ABird>(ActorSpawned);
+			BirdSpawned->InitializeAsPredator(GameMode->PlayableArea);
+			GameMode->BirdsController->RegisterAsPredatorBird(BirdSpawned);
 		}
 	}
 	

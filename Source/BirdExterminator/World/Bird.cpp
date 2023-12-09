@@ -7,6 +7,7 @@
 #include "../BirdsLogic/PreyBehavior.h"
 #include "CollisionPredictor.h"
 #include "BirdExterminator/BirdsLogic/PredatorBehavior.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -27,7 +28,6 @@ ABird::ABird()
 	{
 		StoredMaterialPredator = FoundMaterial.Object;
 	}
-
 }
 
 ABird::~ABird()
@@ -74,7 +74,7 @@ void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, 
 	{
 		delete BirdBehaviorDefinition;
 	}
-	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef);
+	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef, this);
 	IsDestructable = true;
 	InitializeBase(StoredMaterialPrey, ECC_GameTraceChannel2, ECR_Overlap);
 }

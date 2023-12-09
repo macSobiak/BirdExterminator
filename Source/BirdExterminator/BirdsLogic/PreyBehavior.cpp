@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PreyBehavior.h"
+#include "BirdExterminator/GameBase/BirdExterminatorGameMode.h"
+#include "BirdsController.h"
 #include "../World/BirdFlock.h"
 
-PreyBehavior::PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef) : BirdBehavior(PlayableAreaRef)
+PreyBehavior::PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef, AActor* Owner) : BirdBehavior(PlayableAreaRef, Owner)
 {
 	BirdFlockToFollow = BirdFlock;
 	PlaceInFlock = PlaceInFlockRef;
@@ -15,6 +17,21 @@ PreyBehavior::~PreyBehavior()
 
 FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
+	float NearestDistance;
+	const auto NearestPredator = GameMode->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance);
+
+	if(NearestPredator)
+	{
+		if(GetIsOutOfBounds(CurrentLocation))
+		{
+			return GetRotationToMapCenter(DeltaTime, CurrentLocation, CurrentRotation);
+		}
+		if(NearestDistance < DangerDistance)
+		{
+			return FMath::RInterpConstantTo(CurrentRotation,((NearestPredator->GetActorLocation() - CurrentLocation).Rotation()) * -1, DeltaTime, TurnSpeed);
+		}
+	}
+	
 	//If bird has a bird flock to follow, check its position and head to this direction
 	if(BirdFlockToFollow)
 	{

@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "BirdExterminatorCharacter.generated.h"
 
+class ABirdExterminatorGameMode;
 class UInputComponent;
 class UCameraComponent;
 
@@ -42,6 +43,9 @@ class BIRDEXTERMINATOR_API ABirdExterminatorCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere)
 	FVector SpawnOffset;
+
+	UPROPERTY()
+	ABirdExterminatorGameMode* GameMode;
 
 public:
 	// Sets default values for this character's properties

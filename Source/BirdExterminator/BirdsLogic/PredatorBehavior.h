@@ -8,7 +8,6 @@
 /**
  * 
  */
-class ABirdExterminatorGameMode;
 
 class BIRDEXTERMINATOR_API PredatorBehavior : public BirdBehavior
 {
@@ -19,9 +18,9 @@ public:
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) override;
 	virtual bool HandleBirdHit(AActor *ActorHit) override;
 
-	void ConsumeEnergyAndGiveBonus(const float& DeltaTime);
+	void ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance);
+	void ResetSpeedBonus();
 	
-	ABirdExterminatorGameMode* GameMode;
 	ABird* BirdOwner;
 
 	float Energy = 100;

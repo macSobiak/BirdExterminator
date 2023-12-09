@@ -9,6 +9,7 @@
  */
 class ABird;
 class ABirdFlock;
+class ABirdExterminatorGameMode;
 
 enum EBirdState
 {
@@ -20,7 +21,7 @@ enum EBirdState
 class BIRDEXTERMINATOR_API BirdBehavior
 {
 public:
-	BirdBehavior(const FVector3f& PlayableAreaRef);
+	BirdBehavior(const FVector3f& PlayableAreaRef, AActor* Owner);
 	virtual ~BirdBehavior();
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) = 0;
@@ -33,5 +34,7 @@ public:
 	
 protected:
 	FVector3f PlayableArea;
+	ABirdExterminatorGameMode* GameMode;
+
 };
 

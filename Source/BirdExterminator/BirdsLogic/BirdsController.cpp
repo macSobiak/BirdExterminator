@@ -54,8 +54,39 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Dis
 			}
 		}
 	}
+	for (int i=0; i < FreeBirdsArray.Num(); ++i)
+	{
+		const float Dist = (LocationFrom - FreeBirdsArray[i]->GetActorLocation()).SizeSquared();
+		if(MinDistance > Dist)
+		{
+			MinDistance = Dist;
+			NearestActor = FreeBirdsArray[i];
+		}
+	}
 
-	Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());
+	if(NearestActor)
+		Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());
+	
+	return NearestActor;
+}
+
+AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
+{
+	AActor* NearestActor = nullptr;
+	float MinDistance = Distance = TNumericLimits<float>::Max();
+	for (int i=0; i < PredatorsArray.Num(); ++i)
+	{
+		const float Dist = (LocationFrom - PredatorsArray[i]->GetActorLocation()).SizeSquared();
+		if(MinDistance > Dist)
+		{
+			MinDistance = Dist;
+			NearestActor = PredatorsArray[i];
+		}
+	}
+
+	if(NearestActor)
+		Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());
+	
 	return NearestActor;
 }
 
@@ -73,5 +104,27 @@ void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 
 		BirdFlocksArray.Add(BirdFlockSpawned);
 	}
+}
+
+void ABirdsController::RegisterAsFreeBird(ABird* Bird)
+{
+	FreeBirdsArray.Add(Bird);
+	Bird->OnBirdDestroyedEvent.AddUObject(this, &ABirdsController::HandleBirdDestroyed);
+}
+
+void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
+{
+	PredatorsArray.Add(Bird);
+}
+
+void ABirdsController::UnregisterPredator(ABird* Bird)
+{
+	PredatorsArray.Remove(Bird);
+}
+
+void ABirdsController::HandleBirdDestroyed(ABird* Bird)
+{
+	Bird->OnBirdDestroyedEvent.RemoveAll(this);
+	FreeBirdsArray.Remove(Bird);
 }
 
