@@ -41,8 +41,8 @@ public:
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
 	void InitializeBase(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
-	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef);
-	void InitializeAsPredator();
+	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef);
+	void InitializeAsPredator(const FVector3f& PlayableAreaRef);
 	
 	void SetAppearance(UMaterial* MaterialToSet);
 	void SetCollision(const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);

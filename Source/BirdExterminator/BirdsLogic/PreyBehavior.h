@@ -18,8 +18,6 @@ public:
 	virtual bool HandleBirdHit(AActor *ActorHit) override;
 
 private:
-	bool GetIsOutOfBounds(const FVector& CurrentLocation) const;
-	FRotator GetRotationToMapCenter(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
 	FRotator GetRotationToBirdFlock(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
 	
 	ABirdFlock *BirdFlockToFollow;

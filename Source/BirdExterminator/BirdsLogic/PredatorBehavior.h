@@ -13,7 +13,7 @@ class ABirdExterminatorGameMode;
 class BIRDEXTERMINATOR_API PredatorBehavior : public BirdBehavior
 {
 public:
-	PredatorBehavior(AActor *ActorOwner);
+	PredatorBehavior(AActor *ActorOwner, const FVector3f& PlayableAreaRef);
 	virtual ~PredatorBehavior() override;
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) override;

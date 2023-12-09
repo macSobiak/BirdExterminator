@@ -20,17 +20,18 @@ enum EBirdState
 class BIRDEXTERMINATOR_API BirdBehavior
 {
 public:
-	BirdBehavior();
+	BirdBehavior(const FVector3f& PlayableAreaRef);
 	virtual ~BirdBehavior();
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) = 0;
 	virtual bool HandleBirdHit(AActor *ActorHit) = 0;
+	virtual bool GetIsOutOfBounds(const FVector& CurrentLocation) const;
+	virtual FRotator GetRotationToMapCenter(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
 	
 	float TurnSpeed = 210;
 	float InitialVelocity = 500;
 	
 protected:
 	FVector3f PlayableArea;
-	EBirdState BirdState = DefaultBehavior;
 };
 

@@ -102,8 +102,7 @@ void ABirdExterminatorCharacter::ShootPredatorBird(const FInputActionValue& Valu
 			
 			auto BirdSpawned = World->SpawnActor(ShootBirdClass, &SpawnLocation, &SpawnRotation, ActorSpawnParams);
 			//delete it after bird testing
-			Cast<ABird>(BirdSpawned)->InitializeAsPredator();
-
+			Cast<ABird>(BirdSpawned)->InitializeAsPredator(Cast<ABirdExterminatorGameMode>(UGameplayStatics::GetGameMode(this))->PlayableArea);
 		}
 	}
 	

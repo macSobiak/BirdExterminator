@@ -68,7 +68,7 @@ void ABird::InitializeBase(UMaterial* MaterialToSet, const ECollisionChannel &Ch
 	IsInitialized = true;
 }
 
-void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef)
+void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef)
 {
 	if(BirdBehaviorDefinition)
 	{
@@ -79,13 +79,13 @@ void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, 
 	InitializeBase(StoredMaterialPrey, ECC_GameTraceChannel2, ECR_Overlap);
 }
 
-void ABird::InitializeAsPredator()
+void ABird::InitializeAsPredator(const FVector3f& PlayableAreaRef)
 {
 	if(BirdBehaviorDefinition)
 	{
 		delete BirdBehaviorDefinition;
 	}
-	BirdBehaviorDefinition = new PredatorBehavior(this);
+	BirdBehaviorDefinition = new PredatorBehavior(this, PlayableAreaRef);
 	IsDestructable = false;
 
 	InitializeBase(StoredMaterialPredator, ECC_GameTraceChannel3, ECR_Ignore);
