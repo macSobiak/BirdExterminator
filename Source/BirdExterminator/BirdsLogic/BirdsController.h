@@ -25,7 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlocksCount);
 
-	AActor* GetNearestBird(const FVector &LocationFrom);
+	AActor* GetNearestBird(const FVector &LocationFrom, float &Distance);
 	
 private:
 	void SpawnBirdFlocks(const int& BirdFlocksCount);

@@ -38,10 +38,10 @@ void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &B
 	IsInitialized = true;
 }
 
-AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom)
+AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
 {
 	AActor* NearestActor = nullptr;
-	float MinDistance = TNumericLimits<float>::Max();
+	float MinDistance = Distance = TNumericLimits<float>::Max();
 	for (int i=0; i < BirdFlocksArray.Num(); ++i)
 	{
 		for (int j=0; j < BirdFlocksArray[i]->BirdArray.Num(); ++j)
@@ -55,6 +55,7 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom)
 		}
 	}
 
+	Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());
 	return NearestActor;
 }
 
