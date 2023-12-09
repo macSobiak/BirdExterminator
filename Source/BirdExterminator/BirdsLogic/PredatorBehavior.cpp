@@ -4,6 +4,7 @@
 #include "PredatorBehavior.h"
 
 #include "BirdsController.h"
+#include "../World/Bird.h"
 #include "BirdExterminator/GameBase/BirdExterminatorGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,4 +29,16 @@ FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime, const
 	}
 	
 	return CurrentRotation;
+}
+
+bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
+{
+	ABird* BirdActor = Cast<ABird>(ActorHit);
+	if(BirdActor && BirdActor->IsDestructable)
+	{
+		ActorHit->Destroy();
+		return true;
+	}
+	
+	return false;
 }

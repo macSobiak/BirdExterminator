@@ -24,6 +24,7 @@ public:
 	virtual ~BirdBehavior();
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) = 0;
+	virtual bool HandleBirdHit(AActor *ActorHit) = 0;
 	
 	float TurnSpeed = 210;
 	float InitialVelocity = 500;

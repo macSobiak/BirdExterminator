@@ -12,6 +12,7 @@ void ABirdFlock::GenerateNewDestinationPoint()
 	FMath::RandRange(10.0f, PlayableArea.Z));
 }
 
+
 // Sets default values
 ABirdFlock::ABirdFlock()
 {
@@ -40,9 +41,16 @@ void ABirdFlock::SpawnBirds(const int &BirdCount)
 		PlaceInFlockMap.Emplace(SpawnPositionOffset + FVector(0,10,0));
 		
 		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
+		BirdSpawned->OnBirdDestroyedEvent.AddUObject(this, &ABirdFlock::HandleBirdDestroyed);
 		BirdArray.Add(BirdSpawned);
 
 	}
+}
+
+void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
+{
+	Bird->OnBirdDestroyedEvent.RemoveAll(this);
+	BirdArray.Remove(Bird);
 }
 
 void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount)

@@ -15,6 +15,7 @@ public:
 	virtual ~PreyBehavior() override;
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) override;
+	virtual bool HandleBirdHit(AActor *ActorHit) override;
 
 private:
 	bool GetIsOutOfBounds(const FVector& CurrentLocation) const;

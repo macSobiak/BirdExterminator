@@ -13,6 +13,9 @@ class BirdBehavior;
 
 enum class EColliderType : uint8;
 
+
+DECLARE_EVENT_OneParam(ABird, FOnBirdDestroyed, ABird*);
+
 UCLASS()
 class BIRDEXTERMINATOR_API ABird : public AStaticMeshActor
 {
@@ -21,11 +24,12 @@ class BIRDEXTERMINATOR_API ABird : public AStaticMeshActor
 public:	
 	// Sets default values for this actor's properties
 	ABird();
+	virtual ~ABird() override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void Destroyed() override;
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	void RecoverFromHit();
@@ -36,13 +40,17 @@ public:
 	void RegisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
-	void InitializeBase(UMaterial* MaterialToSet);
+	void InitializeBase(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
 	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, FVector3f& PlayableAreaRef);
 	void InitializeAsPredator();
 	
 	void SetAppearance(UMaterial* MaterialToSet);
-	
+	void SetCollision(const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
+	BirdBehavior* BirdBehaviorDefinition = nullptr;
+
+	FOnBirdDestroyed OnBirdDestroyedEvent;
 private:
+	
 	FRotator TurnSpeedRotator = FRotator(0, 0, 0);
 
 	UPROPERTY(VisibleAnywhere)
@@ -56,7 +64,6 @@ private:
 	UPROPERTY()
 	UMaterial* StoredMaterialPredator = nullptr;
 	
-	BirdBehavior* BirdBehaviorDefinition;
 	
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicMaterialInst;
@@ -67,5 +74,7 @@ private:
 	float CurrentCooldown = 0;
 	bool IsOnHitCooldown = false;
 	bool IsInitialized = false;
+public:
+	bool IsDestructable = false;
 	
 };

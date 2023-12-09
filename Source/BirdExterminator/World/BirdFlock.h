@@ -14,6 +14,7 @@ class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 	GENERATED_BODY()
 
 	void GenerateNewDestinationPoint();
+	void HandleBirdDestroyed(ABird* Bird);
 public:	
 	// Sets default values for this actor's properties
 	ABirdFlock();

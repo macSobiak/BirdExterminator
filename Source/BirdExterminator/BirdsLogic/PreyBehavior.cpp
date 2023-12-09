@@ -31,6 +31,11 @@ FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVe
 	return CurrentRotation;
 }
 
+bool PreyBehavior::HandleBirdHit(AActor* ActorHit)
+{
+	return false;
+}
+
 FRotator PreyBehavior::GetRotationToMapCenter(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const
 {
 	return FMath::RInterpConstantTo(CurrentRotation,

@@ -17,6 +17,7 @@ public:
 	virtual ~PredatorBehavior() override;
 
 	virtual FRotator GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) override;
+	virtual bool HandleBirdHit(AActor *ActorHit) override;
 
 	ABirdExterminatorGameMode* GameMode;
 };
