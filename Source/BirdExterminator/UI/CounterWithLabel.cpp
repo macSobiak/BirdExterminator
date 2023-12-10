@@ -4,10 +4,13 @@
 #include "CounterWithLabel.h"
 #include "Components/TextBlock.h"
 
-void UCounterWithLabel::InitializeElement(const int& MaxValue, const int& CurrentValue)
+void UCounterWithLabel::InitializeElement(const int& MaxValue, const int& CurrentValue, const FString& LabelText)
 {
 	RefreshCurrentCount(CurrentValue);
+
 	CounterMax->SetText(FText::AsNumber(MaxValue));
+	Label->SetText(FText::FromString(LabelText));
+
 }
 
 void UCounterWithLabel::RefreshCurrentCount(const int& CurrentValue)

@@ -121,11 +121,15 @@ void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 {
 	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
+	OnPredatorAliveCountChangedEvent.Broadcast(++PredatorBirdsAlive);
+
 	PredatorsArray.Add(Bird);
 }
 
 void ABirdsController::UnregisterPredator(ABird* Bird)
 {
+	OnPredatorAliveCountChangedEvent.Broadcast(--PredatorBirdsAlive);
+	
 	PredatorsArray.Remove(Bird);
 }
 

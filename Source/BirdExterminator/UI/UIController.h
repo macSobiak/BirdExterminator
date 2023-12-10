@@ -7,8 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "UIController.generated.h"
 
-class UShotPredatorsCounter;
-class UBirdsAliveCounter;
+class UGameDataTrackingPanel;
 class ABirdsController;
 UCLASS()
 class BIRDEXTERMINATOR_API AUIController : public AActor
@@ -30,16 +29,12 @@ public:
 	void ShowWidget(UUserWidget* Widget);
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCounterWithLabel> PreyBirdCounterWidget;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UCounterWithLabel> PredatorBirdsCounterWidget;
+	TSubclassOf<UGameDataTrackingPanel> GameDataTrackingPanelWidget;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> CrosshairWidget;
 
 	UPROPERTY()
-	UBirdsAliveCounter* PreyBirdCounter;
-	UPROPERTY()
-	UShotPredatorsCounter* PredatorBirdsCounter;
+	UGameDataTrackingPanel* GameDataTrackingPanel;
 	UPROPERTY()
 	UUserWidget* Crosshair;
 	

@@ -41,6 +41,7 @@ public:
 
 	FOnBirdCountChanged OnBirdCountChangedEvent;
 	FOnBirdCountChanged OnPredatorCountChangedEvent;
+	FOnBirdCountChanged OnPredatorAliveCountChangedEvent;
 
 private:
 	void SpawnBirdFlocks(const int& BirdFlocksCount);
@@ -60,4 +61,5 @@ public:
 	bool IsInitialized = false;
 	int PreyBirdsAlive = 0;
 	int PredatorBirdsAvailable = 10;
+	int PredatorBirdsAlive = 0;
 };

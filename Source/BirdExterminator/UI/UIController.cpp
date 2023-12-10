@@ -3,8 +3,7 @@
 
 #include "UIController.h"
 
-#include "BirdsAliveCounter.h"
-#include "ShotPredatorsCounter.h"
+#include "GameDataTrackingPanel.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -21,19 +20,11 @@ void AUIController::InitializeInterfaceElements(ABirdsController* BirdsControlle
 	BirdsController = BirdsControllerInstance;
 	PlayerController =  UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	
-	PreyBirdCounter = CreateWidget<UBirdsAliveCounter>(PlayerController, PreyBirdCounterWidget);
-	PredatorBirdsCounter = CreateWidget<UShotPredatorsCounter>(PlayerController, PredatorBirdsCounterWidget);
-	
+	GameDataTrackingPanel = CreateWidget<UGameDataTrackingPanel>(PlayerController, GameDataTrackingPanelWidget);
 	Crosshair = CreateWidget<UUserWidget>(PlayerController, CrosshairWidget);
-	
-	PreyBirdCounter->InitializeElement(BirdsController->PreyBirdsAlive, BirdsController->PreyBirdsAlive);
-	PreyBirdCounter->RegisterToControllerEvents(BirdsController);
-	
-	PredatorBirdsCounter->InitializeElement(BirdsController->PredatorBirdsAvailable, BirdsController->PredatorBirdsAvailable);
-	PredatorBirdsCounter->RegisterToControllerEvents(BirdsController);
-	
-	PreyBirdCounter->AddToViewport();
-	PredatorBirdsCounter->AddToViewport();
+
+	GameDataTrackingPanel->InitializePanel(BirdsController);
+	GameDataTrackingPanel->AddToViewport();
 	
 	Crosshair->AddToViewport();
 }

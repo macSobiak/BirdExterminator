@@ -11,7 +11,7 @@ WorldConfigFileParser::~WorldConfigFileParser()
 {
 }
 
-bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataRef)
+bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataRef, FString &ErrorMessage)
 {
 	const FString FullFilePath = FPaths::ProjectConfigDir().Append(TEXT("WorldConfig.txt"));
 	// We will use this FileManager to deal with the file.
@@ -20,13 +20,15 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 	FString FileContent;
 	if (!FileManager.FileExists(*FullFilePath))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("File not found, location: %s"),*FullFilePath);
+		ErrorMessage = FString::Printf(TEXT("File not found, location: %s"),*FullFilePath);
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	
 	if(!FFileHelper::LoadFileToString(FileContent, *FullFilePath))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Text load failed."));
+		ErrorMessage = FString::Printf(TEXT("Text load failed."));
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	
@@ -34,7 +36,8 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 
 	if(FileContent.ParseIntoArrayLines(FileContentSplit) <= 1)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Not enough data in config file!"));  
+		ErrorMessage = FString::Printf(TEXT("Not enough data in config file!"));
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	
@@ -43,20 +46,23 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 			
 	if(WorldSize.Num() != 2)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Wrong world size!"));
+		ErrorMessage = FString::Printf(TEXT("Wrong world size!"));
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	int ValueX = FCString::Atoi(*WorldSize[0]);
 	int ValueY = FCString::Atoi(*WorldSize[1]);
 	if(ValueX < 0 || ValueY < 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("World size cannot have a negative number!"));
+		ErrorMessage = FString::Printf(TEXT("World size cannot have a negative number!"));
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	WorldDataRef = FWorldData(ValueX, ValueY);
 	if(FileContentSplit.Num() -1 != WorldDataRef.WorldSizeY)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Not enough Building Heights in Y axis!"));
+		ErrorMessage = FString::Printf(TEXT("Not enough Building Heights in Y axis!"));
+		LogErrorMessage(ErrorMessage);
 		return false;
 	}
 	
@@ -66,7 +72,8 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 		FileContentSplit[i].ParseIntoArray(BuildingHeights, TEXT(","));
 		if(BuildingHeights.Num() != WorldDataRef.WorldSizeX)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Not enough Building Heights in X axis for row %d!"), i);
+			ErrorMessage = FString::Printf(TEXT("Not enough Building Heights in X axis for row %d!"), i);
+			LogErrorMessage(ErrorMessage);
 			return false;
 		}
 		for(int j = 0; j < BuildingHeights.Num(); ++j)
@@ -74,7 +81,8 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 			float Height = FCString::Atof(*BuildingHeights[j]);
 			if(Height < 0)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Height cannot be a negative number!"));
+				ErrorMessage = FString::Printf(TEXT("Height cannot be a negative number!"));
+				LogErrorMessage(ErrorMessage);
 				return false;
 			}
 			WorldDataRef.BuildingHeightMatrix[i-1].push_back(Height);
@@ -82,4 +90,10 @@ bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataR
 	}
 	
 	return true;
+}
+
+void WorldConfigFileParser::LogErrorMessage(const FString &ErrorMessage)
+{
+	UE_LOG(LogTemp, Error, TEXT("%s"), *ErrorMessage);
+
 }

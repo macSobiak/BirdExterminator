@@ -14,12 +14,12 @@ AWorldBuilder::AWorldBuilder()
 
 }
 
-void AWorldBuilder::GenerateWorld(FVector3f &PlayableArea)
+bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage)
 {
 	WorldConfigFileParser* FileParser = new WorldConfigFileParser;
 	FWorldData WorldData;
-	if(!FileParser->TryGetWorldDataFromConfigFile(WorldData))
-		return;
+	if(!FileParser->TryGetWorldDataFromConfigFile(WorldData, ErrorMessage))
+		return false;
 	
 	float BuildingSizeX = 100 * BuildingScaleX;
 	float BuildingSizeY = 100 * BuildingScaleY;
@@ -65,6 +65,8 @@ void AWorldBuilder::GenerateWorld(FVector3f &PlayableArea)
 
 	PlayableArea = FVector3f(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
+
+	return true;
 }
 
 // Called when the game starts or when spawned

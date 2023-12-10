@@ -15,8 +15,13 @@ void ABirdExterminatorGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	FVector3f PlayableArea;
+	FString ErrorMessage;
 	WorldBuilder = Cast<AWorldBuilder>(UGameplayStatics::GetActorOfClass(this, AWorldBuilder::StaticClass()));
-	WorldBuilder->GenerateWorld(PlayableArea);
+	if(!WorldBuilder->GenerateWorld(PlayableArea, ErrorMessage))
+	{
+		//show UI prompt
+		return;
+	}
 	
 	BirdsController = Cast<ABirdsController>(UGameplayStatics::GetActorOfClass(this, ABirdsController::StaticClass()));
 	BirdsController->Initialize(PlayableArea, 10);;

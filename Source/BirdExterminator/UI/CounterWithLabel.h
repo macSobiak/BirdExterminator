@@ -15,9 +15,9 @@ public:
 	class UTextBlock* CurrentCounter;
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* CounterMax;
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* Label;
 
-	virtual void InitializeElement(const int& MaxValue, const int& CurrentValue);
-
-protected:
+	virtual void InitializeElement(const int& MaxValue, const int& CurrentValue, const FString& LabelText);
 	virtual void RefreshCurrentCount(const int& CurrentValue);
 };
