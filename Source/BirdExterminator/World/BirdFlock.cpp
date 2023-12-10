@@ -53,6 +53,11 @@ void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
 	Bird->OnBirdDestroyedEvent.RemoveAll(this);
 	BirdArray.Remove(Bird);
 	OnBirdInFlockDestroyedChanged.Broadcast();
+
+	if(BirdArray.Num() == 0)
+	{
+		Destroy();
+	}
 }
 
 void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance)
@@ -78,6 +83,12 @@ FVector ABirdFlock::GetPlaceInFlock(const int& PlaceInFlock)
 void ABirdFlock::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ABirdFlock::Destroyed()
+{
+	Super::Destroyed();
+	OnBirdInFlockDestroyedChanged.Clear();
 }
 
 // Called every frame

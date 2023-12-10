@@ -4,6 +4,7 @@
 #include "UIController.h"
 
 #include "GameDataTrackingPanel.h"
+#include "PromptWithButtons.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -41,5 +42,19 @@ void AUIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AUIController::ShowPopup(const FString& PopupMessage)
+{
+	if(!PlayerController)
+		PlayerController =  UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	PromptWithButtons = CreateWidget<UPromptWithButtons>(PlayerController, PopupWidget);
+	
+	PromptWithButtons->InitializePrompt(PopupMessage);
+	PromptWithButtons->AddToViewport();
+
+	PlayerController->SetInputMode(FInputModeUIOnly());
+	PlayerController->SetShowMouseCursor(true);
 }
 

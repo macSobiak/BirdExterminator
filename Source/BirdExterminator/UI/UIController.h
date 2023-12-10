@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CounterWithLabel.h"
 #include "GameFramework/Actor.h"
 #include "UIController.generated.h"
 
 class UGameDataTrackingPanel;
+class UPromptWithButtons;
 class ABirdsController;
 UCLASS()
 class BIRDEXTERMINATOR_API AUIController : public AActor
@@ -26,17 +26,21 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void ShowWidget(UUserWidget* Widget);
+	void ShowPopup(const FString &PopupMessage);
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameDataTrackingPanel> GameDataTrackingPanelWidget;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> CrosshairWidget;
-
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UPromptWithButtons> PopupWidget;
+	
 	UPROPERTY()
 	UGameDataTrackingPanel* GameDataTrackingPanel;
 	UPROPERTY()
 	UUserWidget* Crosshair;
+	UPROPERTY()
+	UPromptWithButtons* PromptWithButtons;
 	
 	UPROPERTY()
 	APlayerController* PlayerController;

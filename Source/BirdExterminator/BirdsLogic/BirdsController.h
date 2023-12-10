@@ -23,7 +23,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void Destroyed() override;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,6 +38,7 @@ public:
 	void HandleBirdDestroyed(ABird* Bird);
 	void SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters);
 	void BirdInFlockDestroyed();
+	void ReinitializeController();
 
 	FOnBirdCountChanged OnBirdCountChangedEvent;
 	FOnBirdCountChanged OnPredatorCountChangedEvent;
@@ -44,6 +46,7 @@ public:
 
 private:
 	void SpawnBirdFlocks(const int& BirdFlocksCount);
+	void DestroyBirdFlocks();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> PredatorBirdClass;
@@ -57,6 +60,7 @@ private:
 
 	FVector3f PlayableArea;
 	bool IsInitialized = false;
+	int BirdFlocks = 0;
 
 public:	
 	int PreyBirdsAlive = 0;

@@ -21,19 +21,28 @@ void ABirdsController::BeginPlay()
 	
 }
 
+void ABirdsController::Destroyed()
+{
+	Super::Destroyed();
+
+	OnBirdCountChangedEvent.Clear();
+	OnPredatorCountChangedEvent.Clear();
+	OnPredatorAliveCountChangedEvent.Clear();
+}
+
 // Called every frame
 void ABirdsController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
 {
-	BirdFlocksArray.Reserve(BirdFlockCount);
+	BirdFlocks = BirdFlockCount;
+	BirdFlocksArray.Reserve(BirdFlocks);
 	PlayableArea = PlayableAreaRef;
 	
-	SpawnBirdFlocks(BirdFlockCount);
+	SpawnBirdFlocks(BirdFlocks);
 
 	IsInitialized = true;
 }
@@ -111,6 +120,16 @@ void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 	}
 }
 
+void ABirdsController::DestroyBirdFlocks()
+{
+	for (int i=0; i < BirdFlocksArray.Num(); ++i)
+	{
+		BirdFlocksArray[i]->Destroy();
+	}
+
+	BirdFlocksArray.Reset();
+}
+
 void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 {
 	FreeBirdsArray.Add(Bird);
@@ -159,5 +178,13 @@ void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRo
 void ABirdsController::BirdInFlockDestroyed()
 {
 	OnBirdCountChangedEvent.Broadcast(--PreyBirdsAlive);
+}
+
+void ABirdsController::ReinitializeController()
+{
+	DestroyBirdFlocks();
+	SpawnBirdFlocks(BirdFlocks);
+
+	IsInitialized = true;
 }
 
