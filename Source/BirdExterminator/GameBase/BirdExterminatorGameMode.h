@@ -23,7 +23,7 @@ private:
 
 public:
 	
-	void CheckWinLooseConditions(const int &BirdsAlive, const int &PredatorsAlive, const int &AmmoCount);
+	void CheckWinLooseConditions(const int &_);
 	
 	UPROPERTY()
 	ABirdsController* BirdsController;

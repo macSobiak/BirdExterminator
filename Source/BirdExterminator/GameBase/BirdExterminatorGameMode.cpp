@@ -24,21 +24,26 @@ void ABirdExterminatorGameMode::BeginPlay()
 	}
 	
 	BirdsController = Cast<ABirdsController>(UGameplayStatics::GetActorOfClass(this, ABirdsController::StaticClass()));
-	BirdsController->Initialize(PlayableArea, 10);;
+	BirdsController->Initialize(PlayableArea, 1);
+
+	BirdsController->OnBirdCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
+	BirdsController->OnPredatorCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
+	BirdsController->OnPredatorAliveCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
 
 	UIController = Cast<AUIController>(UGameplayStatics::GetActorOfClass(this, AUIController::StaticClass()));
 	UIController->InitializeInterfaceElements(BirdsController);
 }
 
-void ABirdExterminatorGameMode::CheckWinLooseConditions(const int& BirdsAlive, const int& PredatorsAlive,
-	const int& AmmoCount)
+void ABirdExterminatorGameMode::CheckWinLooseConditions(const int& _)
 {
-	if(BirdsAlive == 0)
+	if(BirdsController->PreyBirdsAlive == 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("-------------WON-------------"))
 		//WIN
 	}
-	else if (PredatorsAlive == 0 && AmmoCount == 0)
+	else if (BirdsController->PredatorBirdsAlive == 0 && BirdsController->PredatorBirdsAvailable == 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("-------------LOST-------------"))
 		//LOSE
 	}
 }
