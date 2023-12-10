@@ -21,12 +21,7 @@ private:
 	UPROPERTY()
 	AWorldBuilder* WorldBuilder;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABirdsController> BirdsControllerBlueprint;
-
-
 public:
-	FVector3f PlayableArea;
 	UPROPERTY()
 	ABirdsController* BirdsController;
 	UPROPERTY()

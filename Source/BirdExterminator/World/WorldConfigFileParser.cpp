@@ -13,11 +13,7 @@ WorldConfigFileParser::~WorldConfigFileParser()
 
 bool WorldConfigFileParser::TryGetWorldDataFromConfigFile(FWorldData &WorldDataRef)
 {
-#if WITH_EDITOR
 	const FString FullFilePath = FPaths::ProjectConfigDir().Append(TEXT("WorldConfig.txt"));
-#else
-	const FString FullFilePath = "WorldConfig.txt";
-#endif
 	// We will use this FileManager to deal with the file.
 	IPlatformFile& FileManager = FPlatformFileManager::Get().GetPlatformFile();
 

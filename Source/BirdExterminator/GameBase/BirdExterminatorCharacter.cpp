@@ -9,7 +9,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
-#include "BirdExterminator/World/Bird.h"
 #include "GameFramework/DefaultPawn.h"
 #include "Kismet/GameplayStatics.h"
 
