@@ -10,13 +10,6 @@
 class ABird;
 class ABirdFlock;
 
-enum EBirdState
-{
-	DefaultBehavior,
-	RecoveryAfterHit,
-	OutOfBounds
-};
-
 class BIRDEXTERMINATOR_API BirdBehavior
 {
 public:
@@ -27,13 +20,14 @@ public:
 	virtual bool HandleBirdHit(AActor *ActorHit) = 0;
 	virtual bool GetIsOutOfBounds(const FVector& CurrentLocation) const;
 	virtual FRotator GetRotationToMapCenter(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
-	
-	float TurnSpeed = 210;
-	float InitialVelocity = 500;
-	
+	virtual float GetTurnSpeed() const {return TurnSpeed;};
+	virtual float GetMoveSpeed() const {return MoveSpeed;};
+
 protected:
 	FVector3f PlayableArea;
 	ABird* BirdOwner;
 
+	float TurnSpeed = 210;
+	float MoveSpeed = 500;
 };
 

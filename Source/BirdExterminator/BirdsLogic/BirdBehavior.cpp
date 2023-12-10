@@ -16,7 +16,7 @@ FRotator BirdBehavior::GetRotationToMapCenter(float DeltaTime, const FVector& Cu
 {
 	return FMath::RInterpConstantTo(CurrentRotation,
 		FVector(-CurrentLocation.X, -CurrentLocation.Y, (PlayableArea.Z / 2) - CurrentLocation.Z).Rotation(),
-		DeltaTime, TurnSpeed);
+		DeltaTime, GetTurnSpeed());
 }
 
 bool BirdBehavior::GetIsOutOfBounds(const FVector& CurrentLocation) const

@@ -22,8 +22,9 @@ inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime
 		ConsumeEnergyAndGiveBonusIfPossible(DeltaTime, NearestDistance);
 		return FMath::RInterpConstantTo(CurrentRotation,(NearestBird->GetActorLocation() - CurrentLocation).Rotation(), DeltaTime, TurnSpeed);
 	}
-	
-	ResetSpeedBonus();
+
+	if(IsOnBoost)
+		IsOnBoost = false;
 	
 	//if no prey left -> fly around, avoid obstacles and don't leave the play area
 	if(GetIsOutOfBounds(CurrentLocation))
@@ -47,14 +48,23 @@ inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 	return false;
 }
 
+inline float PredatorBehavior::GetTurnSpeed() const
+{
+	return IsOnBoost ? TurnSpeed * BoostMultiplier : TurnSpeed;
+}
+
+inline float PredatorBehavior::GetMoveSpeed() const
+{
+	return IsOnBoost ? MoveSpeed * BoostMultiplier: MoveSpeed;
+}
+
 inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)
 {
 	if(NearestDistance < BoostDistance && Energy > 0)
 	{
 		Energy -= EnergyLossPerSec * DeltaTime;
-		//UE_LOG(LogTemp, Error, TEXT("Energy CONSUUUME %f"), Energy);
-		InitialVelocity = 700;
-		TurnSpeed = 250;
+		if(!IsOnBoost)
+			IsOnBoost = true;
 
 		if(Energy <= 0)
 		{
@@ -64,15 +74,9 @@ inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& D
 			BirdOwner->TransformToPrey(PlayableArea);
 		}
 	}
-	else
+	else if(IsOnBoost)
 	{
-		ResetSpeedBonus();
+		IsOnBoost = false;
 	}
 
-}
-
-inline void PredatorBehavior::ResetSpeedBonus()
-{
-	InitialVelocity = 500;
-	TurnSpeed = 230;
 }

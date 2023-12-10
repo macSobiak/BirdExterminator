@@ -115,7 +115,7 @@ void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrim
 	//when collision happened add impulse with gravity to simulate hit
 	if(!IsOnHitCooldown)
 	{
-		MeshComponent->AddImpulse(GetActorForwardVector() * BirdBehaviorDefinition->InitialVelocity * 5);
+		MeshComponent->AddImpulse(GetActorForwardVector() * BirdBehaviorDefinition->GetMoveSpeed() * 5);
 		MeshComponent->SetEnableGravity(true);
 	}
 	
@@ -154,9 +154,9 @@ void ABird::Tick(float DeltaTime)
 	else
 	{
 		//always prioritize avoiding obstacles
-		AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->TurnSpeed * DeltaTime));
+		AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->GetTurnSpeed() * DeltaTime));
 		//bird is always moving forward
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (BirdBehaviorDefinition->InitialVelocity * DeltaTime), true);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (BirdBehaviorDefinition->GetMoveSpeed() * DeltaTime), true);
 
 		//if no collision avoidance happens
 		if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0 && BirdBehaviorDefinition)

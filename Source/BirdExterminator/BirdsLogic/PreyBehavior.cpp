@@ -28,7 +28,7 @@ inline FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, co
 		}
 		if(NearestDistance < DangerDistance)
 		{
-			return FMath::RInterpConstantTo(CurrentRotation,((NearestPredator->GetActorLocation() - CurrentLocation).Rotation()) * -1, DeltaTime, TurnSpeed);
+			return FMath::RInterpConstantTo(CurrentRotation,((NearestPredator->GetActorLocation() - CurrentLocation).Rotation()) * -1, DeltaTime, GetTurnSpeed());
 		}
 	}
 	
