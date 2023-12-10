@@ -55,15 +55,20 @@ void ABird::Destroyed()
 	Super::Destroyed();
 }
 
-void ABird::InitializeBase(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey)
+
+void ABird::InitializeCommonObjects(ABirdsController* BirdsControllerInstance)
 {
+	BirdsController = BirdsControllerInstance;
 	if(!MeshComponent)
 	{
 		MeshComponent = FindComponentByClass<UStaticMeshComponent>();
 		MeshComponent->OnComponentHit.AddDynamic(this, &ABird::OnHit);
 	}
-	SetAppearance(MaterialToSet);
+}
 
+void ABird::AdjustAppearance(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey)
+{
+	SetAppearance(MaterialToSet);
 	SetCollision(ChannelToSet, ResponseToBirdPrey);
 	IsInitialized = true;
 }
@@ -76,7 +81,12 @@ void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, 
 	}
 	BirdBehaviorDefinition = new PreyBehavior(BirdFlock, PlaceInFlockRef, PlayableAreaRef, this);
 	IsDestructable = true;
-	InitializeBase(StoredMaterialPrey, ECC_GameTraceChannel2, ECR_Overlap);
+	AdjustAppearance(StoredMaterialPrey, ECC_GameTraceChannel2, ECR_Overlap);
+}
+
+void ABird::TransformToPrey(const FVector3f& PlayableAreaRef)
+{
+	InitializeAsPrey(nullptr, 0, PlayableAreaRef);
 }
 
 void ABird::InitializeAsPredator(const FVector3f& PlayableAreaRef)
@@ -88,7 +98,7 @@ void ABird::InitializeAsPredator(const FVector3f& PlayableAreaRef)
 	BirdBehaviorDefinition = new PredatorBehavior(this, PlayableAreaRef);
 	IsDestructable = false;
 
-	InitializeBase(StoredMaterialPredator, ECC_GameTraceChannel3, ECR_Ignore);
+	AdjustAppearance(StoredMaterialPredator, ECC_GameTraceChannel3, ECR_Ignore);
 }
 
 void ABird::SetAppearance(UMaterial* MaterialToSet)

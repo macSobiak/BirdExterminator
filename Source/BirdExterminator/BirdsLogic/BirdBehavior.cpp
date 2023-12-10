@@ -2,12 +2,10 @@
 
 
 #include "BirdBehavior.h"
-#include "BirdExterminator/GameBase/BirdExterminatorGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
-BirdBehavior::BirdBehavior(const FVector3f& PlayableAreaRef, AActor* Owner) : PlayableArea(PlayableAreaRef)
+BirdBehavior::BirdBehavior(const FVector3f& PlayableAreaRef, ABird* Owner) : PlayableArea(PlayableAreaRef), BirdOwner(Owner)
 {
-	GameMode = Cast<ABirdExterminatorGameMode>(UGameplayStatics::GetGameMode(Owner));
 }
 
 BirdBehavior::~BirdBehavior()

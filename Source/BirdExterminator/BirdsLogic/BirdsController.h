@@ -8,7 +8,6 @@
 
 class ABirdFlock;
 class ABird;
-class ABirdExterminatorGameMode;
 
 DECLARE_EVENT_OneParam(ABirdsController, FOnBirdCountChanged, const int&);
 
@@ -57,8 +56,9 @@ private:
 	TArray<ABird*> FreeBirdsArray;
 
 	FVector3f PlayableArea;
-public:	
 	bool IsInitialized = false;
+
+public:	
 	int PreyBirdsAlive = 0;
 	int PredatorBirdsAvailable = 10;
 	int PredatorBirdsAlive = 0;

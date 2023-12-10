@@ -10,6 +10,7 @@
 class UCollisionPredictor;
 class ABirdFlock;
 class BirdBehavior;
+class ABirdsController;
 
 enum class EColliderType : uint8;
 
@@ -40,8 +41,11 @@ public:
 	void RegisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
-	void InitializeBase(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
+	void InitializeCommonObjects(ABirdsController* BirdsControllerInstance);
+
+	void AdjustAppearance(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
 	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef);
+	void TransformToPrey(const FVector3f& PlayableAreaRef);
 	void InitializeAsPredator(const FVector3f& PlayableAreaRef);
 	
 	void SetAppearance(UMaterial* MaterialToSet);
@@ -64,7 +68,7 @@ private:
 	UPROPERTY()
 	UMaterial* StoredMaterialPredator = nullptr;
 	
-	
+
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicMaterialInst;
 
@@ -76,5 +80,7 @@ private:
 	bool IsInitialized = false;
 public:
 	bool IsDestructable = false;
+	UPROPERTY()
+	ABirdsController* BirdsController;
 	
 };

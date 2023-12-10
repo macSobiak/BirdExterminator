@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PreyBehavior.h"
-#include "BirdExterminator/GameBase/BirdExterminatorGameMode.h"
 #include "BirdsController.h"
+#include "../World/Bird.h"
 #include "../World/BirdFlock.h"
 
-PreyBehavior::PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef, AActor* Owner) : BirdBehavior(PlayableAreaRef, Owner)
+PreyBehavior::PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, const FVector3f &PlayableAreaRef, ABird* Owner) : BirdBehavior(PlayableAreaRef, Owner)
 {
 	BirdFlockToFollow = BirdFlock;
 	PlaceInFlock = PlaceInFlockRef;
@@ -13,12 +13,13 @@ PreyBehavior::PreyBehavior(ABirdFlock *BirdFlock, const int &PlaceInFlockRef, co
 
 PreyBehavior::~PreyBehavior()
 {
+	BirdFlockToFollow = nullptr;
 }
 
 FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
 	float NearestDistance;
-	const auto NearestPredator = GameMode->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance);
+	const auto NearestPredator = BirdOwner->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance);
 
 	if(NearestPredator)
 	{

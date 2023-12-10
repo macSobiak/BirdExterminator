@@ -21,8 +21,6 @@ public:
 	void ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance);
 	void ResetSpeedBonus();
 	
-	ABird* BirdOwner;
-
 	float Energy = 100;
 	float EnergyLossPerSec = 25;
 	float EnergyGainAfterKill = 25;

@@ -22,6 +22,9 @@ private:
 	AWorldBuilder* WorldBuilder;
 
 public:
+	
+	void CheckWinLooseConditions(const int &BirdsAlive, const int &PredatorsAlive, const int &AmmoCount);
+	
 	UPROPERTY()
 	ABirdsController* BirdsController;
 	UPROPERTY()

@@ -29,3 +29,16 @@ void ABirdExterminatorGameMode::BeginPlay()
 	UIController = Cast<AUIController>(UGameplayStatics::GetActorOfClass(this, AUIController::StaticClass()));
 	UIController->InitializeInterfaceElements(BirdsController);
 }
+
+void ABirdExterminatorGameMode::CheckWinLooseConditions(const int& BirdsAlive, const int& PredatorsAlive,
+	const int& AmmoCount)
+{
+	if(BirdsAlive == 0)
+	{
+		//WIN
+	}
+	else if (PredatorsAlive == 0 && AmmoCount == 0)
+	{
+		//LOSE
+	}
+}

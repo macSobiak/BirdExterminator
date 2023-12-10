@@ -40,7 +40,8 @@ void ABirdFlock::SpawnBirds(const int &BirdCount)
 		auto SpawnPosition = GetActorLocation() + SpawnPositionOffset;
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
 		PlaceInFlockMap.Emplace(SpawnPositionOffset + FVector(0,10,0));
-		
+
+		BirdSpawned->InitializeCommonObjects(BirdsController);
 		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
 		BirdSpawned->OnBirdDestroyedEvent.AddUObject(this, &ABirdFlock::HandleBirdDestroyed);
 		BirdArray.Add(BirdSpawned);
@@ -54,12 +55,13 @@ void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
 	OnBirdInFlockDestroyedChanged.Broadcast();
 }
 
-void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount)
+void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance)
 {
 	BirdArray.Reserve(BirdCount);
 	PlaceInFlockMap.Reserve(BirdCount);
 
 	PlayableArea = PlayableAreaRef;
+	BirdsController = BirdsControllerInstance;
 	
 	SpawnBirds(BirdCount);
 	GenerateNewDestinationPoint();

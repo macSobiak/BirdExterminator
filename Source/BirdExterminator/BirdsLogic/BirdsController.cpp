@@ -101,7 +101,7 @@ void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 		
 		auto BirdFlockSpawned = Cast<ABirdFlock>(GetWorld()->SpawnActor(BirdFlockBlueprint, &RandomSpawnPoint));
 		int BirdsToSpawn = FMath::RandRange(5,8);
-		BirdFlockSpawned->Initialize(PlayableArea, BirdsToSpawn);
+		BirdFlockSpawned->Initialize(PlayableArea, BirdsToSpawn, this);
 
 		BirdFlocksArray.Add(BirdFlockSpawned);
 
@@ -150,6 +150,7 @@ void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRo
 	{
 		auto ActorSpawned = World->SpawnActor(PredatorBirdClass, &SpawnLocation, &SpawnRotator, SpawnParameters);
 		auto BirdSpawned = Cast<ABird>(ActorSpawned);
+		BirdSpawned->InitializeCommonObjects(this);
 		BirdSpawned->InitializeAsPredator(PlayableArea);
 		RegisterAsPredatorBird(BirdSpawned);
 	}

@@ -2,25 +2,21 @@
 
 
 #include "PredatorBehavior.h"
-#include "BirdExterminator/GameBase/BirdExterminatorGameMode.h"
 #include "BirdsController.h"
 #include "../World/Bird.h"
 
 PredatorBehavior::PredatorBehavior(ABird *ActorOwner, const FVector3f& PlayableAreaRef) : BirdBehavior(PlayableAreaRef, ActorOwner)
 {
-	BirdOwner = ActorOwner;
 }
 
 PredatorBehavior::~PredatorBehavior()
 {
-	BirdOwner = nullptr;
-	GameMode = nullptr;
 }
 
 FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
 	float NearestDistance;
-	const auto NearestBird = GameMode->BirdsController->GetNearestBird(CurrentLocation, NearestDistance);
+	const auto NearestBird = BirdOwner->BirdsController->GetNearestBird(CurrentLocation, NearestDistance);
 
 	if(NearestBird)
 	{
@@ -63,10 +59,10 @@ void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTim
 
 		if(Energy <= 0)
 		{
-			GameMode->BirdsController->UnregisterPredator(BirdOwner);
-			GameMode->BirdsController->RegisterAsFreeBird(BirdOwner);
+			BirdOwner->BirdsController->UnregisterPredator(BirdOwner);
+			BirdOwner->BirdsController->RegisterAsFreeBird(BirdOwner);
 		
-			BirdOwner->InitializeAsPrey(nullptr, 0, PlayableArea);
+			BirdOwner->TransformToPrey(PlayableArea);
 		}
 	}
 	else

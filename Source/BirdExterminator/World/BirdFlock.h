@@ -7,6 +7,7 @@
 #include "BirdFlock.generated.h"
 
 class ABird;
+class ABirdsController;
 
 DECLARE_EVENT(ABirdFlock, FOnBirdInFlockDestroyed);
 
@@ -21,7 +22,7 @@ public:
 	// Sets default values for this actor's properties
 	ABirdFlock();
 	void SpawnBirds(const int &BirdCount);
-	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount);
+	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance);
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,6 +42,9 @@ public:
 	FVector FlockFlightDestination;
 	UPROPERTY(EditAnywhere)
 	FVector3f PlayableArea;
+	
+	UPROPERTY(EditAnywhere)
+	ABirdsController *BirdsController;
 
 	bool IsInitialized = false;
 	int TrackedBirdCount = 0;
