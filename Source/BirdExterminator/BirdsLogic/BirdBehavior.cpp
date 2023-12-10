@@ -2,7 +2,6 @@
 
 
 #include "BirdBehavior.h"
-#include "Kismet/GameplayStatics.h"
 
 BirdBehavior::BirdBehavior(const FVector3f& PlayableAreaRef, ABird* Owner) : PlayableArea(PlayableAreaRef), BirdOwner(Owner)
 {

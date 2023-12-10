@@ -34,7 +34,7 @@ void ABirdsController::Destroyed()
 	OnPredatorAliveCountChangedEvent.Clear();
 }
 
-inline void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
+void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
 {
 	BirdFlocksArray.Reserve(BirdFlockCount);
 	PlayableArea = PlayableAreaRef;
@@ -44,7 +44,7 @@ inline void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const
 	IsInitialized = true;
 }
 
-inline AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
+AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
@@ -74,7 +74,7 @@ inline AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, flo
 	return NearestActor;
 }
 
-inline AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
+AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
@@ -116,7 +116,7 @@ inline void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 	}
 }
 
-inline void ABirdsController::RegisterAsFreeBird(ABird* Bird)
+void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 {
 	FreeBirdsArray.Add(Bird);
 	OnBirdCountChangedEvent.Broadcast(++PreyBirdsAlive);
@@ -131,7 +131,7 @@ inline void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 	PredatorsArray.Add(Bird);
 }
 
-inline void ABirdsController::UnregisterPredator(ABird* Bird)
+void ABirdsController::UnregisterPredator(ABird* Bird)
 {
 	OnPredatorAliveCountChangedEvent.Broadcast(--PredatorBirdsAlive);
 	
@@ -154,7 +154,7 @@ void ABirdsController::HandleBirdFlockDestroyed(AActor* Actor)
 	BirdFlocksArray.Remove(BirdFlock);
 }
 
-inline void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)
+void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)
 {
 	if(PredatorBirdsAvailable <= 0)
 		return;

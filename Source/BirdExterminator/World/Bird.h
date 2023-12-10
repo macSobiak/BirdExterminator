@@ -45,7 +45,7 @@ public:
 
 	void InitializeCommonObjects(ABirdsController* BirdsControllerInstance);
 	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef);
-	void TransformToPrey(const FVector3f& PlayableAreaRef);
+	void TransformToPrey();
 	void InitializeAsPredator(const FVector3f& PlayableAreaRef);
 	
 	FOnBirdDestroyed OnBirdDestroyedEvent;

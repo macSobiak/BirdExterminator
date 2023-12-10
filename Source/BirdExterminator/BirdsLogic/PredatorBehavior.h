@@ -23,13 +23,17 @@ public:
 	virtual float GetTurnSpeed() const override;
 	virtual float GetMoveSpeed() const override;
 	virtual bool GetCanTurn(const float& DeltaTime) override;
+
+private:
+	float MaxEnergy = 100;
 	float Energy = 100;
+	
 	float EnergyLossPerSec = 25;
-	
 	float EnergyGainAfterKill = 25;
-	float BoostDistance = 500;
 	
+	float BoostDistance = 500;
 	float BoostMultiplier = 1.4;
+	
 	float LaunchCooldown = 0.5;
 	bool IsJustLaunched = true;
 	bool IsOnBoost = false;

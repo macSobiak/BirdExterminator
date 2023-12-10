@@ -40,7 +40,7 @@ void ABird::Destroyed()
 
 #pragma region BirdBehaviorAndAppearance
 
-inline void ABird::InitializeCommonObjects(ABirdsController* BirdsControllerInstance)
+void ABird::InitializeCommonObjects(ABirdsController* BirdsControllerInstance)
 {
 	BirdsController = BirdsControllerInstance;
 	if(!MeshComponent)
@@ -57,7 +57,7 @@ inline void ABird::AdjustAppearance(UMaterial* MaterialToSet, const ECollisionCh
 	IsInitialized = true;
 }
 
-inline void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef)
+void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef)
 {
 	if(BirdBehaviorDefinition)
 	{
@@ -68,12 +68,12 @@ inline void ABird::InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlo
 	AdjustAppearance(BirdsController->StoredMaterialPrey, ECC_GameTraceChannel2, ECR_Overlap);
 }
 
-inline void ABird::TransformToPrey(const FVector3f& PlayableAreaRef)
+void ABird::TransformToPrey()
 {
-	InitializeAsPrey(nullptr, 0, PlayableAreaRef);
+	InitializeAsPrey(nullptr, 0, BirdsController->PlayableArea);
 }
 
-inline void ABird::InitializeAsPredator(const FVector3f& PlayableAreaRef)
+void ABird::InitializeAsPredator(const FVector3f& PlayableAreaRef)
 {
 	if(BirdBehaviorDefinition)
 	{
@@ -153,12 +153,12 @@ void ABird::Tick(float DeltaTime)
 	}
 	else
 	{
-		//always prioritize avoiding obstacles (if is not a predator that just have beed launched)
+		//always prioritize avoiding obstacles (if is not a predator that just have been launched)
 		if(BirdBehaviorDefinition->GetCanTurn(DeltaTime))
 		{
 			AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->GetTurnSpeed() * DeltaTime));
 
-			//if no collision avoidance happens
+			//if no collision avoidance happens, make standard decisions like keep in playable area or target prey bird
 			if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)
 				SetActorRotation(BirdBehaviorDefinition->GetDirectionConditional(DeltaTime, GetActorLocation(), GetActorRotation()));
 		}

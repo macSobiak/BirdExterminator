@@ -53,10 +53,10 @@ private:
 	TArray<ABirdFlock*> BirdFlocksArray;
 	TArray<ABird*> PredatorsArray;
 	TArray<ABird*> FreeBirdsArray;
-	
-	FVector3f PlayableArea;
 
 public:
+	FVector3f PlayableArea;
+
 	UPROPERTY()
 	UMaterial* StoredMaterialPrey = nullptr;
 	UPROPERTY()

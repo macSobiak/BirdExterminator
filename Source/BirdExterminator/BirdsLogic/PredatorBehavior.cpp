@@ -41,7 +41,9 @@ inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 	if(BirdActor && BirdActor->IsDestructable)
 	{
 		ActorHit->Destroy();
-		Energy += EnergyGainAfterKill;
+		if((Energy += EnergyGainAfterKill) > MaxEnergy)
+			Energy = MaxEnergy;
+
 		return true;
 	}
 	
@@ -94,7 +96,7 @@ inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& D
 			BirdOwner->BirdsController->UnregisterPredator(BirdOwner);
 			BirdOwner->BirdsController->RegisterAsFreeBird(BirdOwner);
 		
-			BirdOwner->TransformToPrey(PlayableArea);
+			BirdOwner->TransformToPrey();
 		}
 	}
 	else if(IsOnBoost)
