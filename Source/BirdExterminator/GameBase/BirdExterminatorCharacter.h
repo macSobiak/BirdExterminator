@@ -34,10 +34,15 @@ class BIRDEXTERMINATOR_API ABirdExterminatorCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
-	
+
+	/** Shoot Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ShootAction;
 
+	/** Sprint Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> ShootBirdClass;
 
@@ -46,6 +51,10 @@ class BIRDEXTERMINATOR_API ABirdExterminatorCharacter : public ACharacter
 
 	UPROPERTY()
 	ABirdExterminatorGameMode* GameMode;
+
+	float SprintMultiplier = 2.0f;
+	float JumpMultiplier = 1.5f;
+	float DefaultWalkingSpeed;
 
 public:
 	// Sets default values for this character's properties
@@ -68,9 +77,12 @@ protected:
 	void Look(const FInputActionValue& Value);
 	
 	void ShootPredatorBird(const FInputActionValue& Value);
+	void StartSprint();
+	void StopSprint();
 	
 public:
 
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 };
+

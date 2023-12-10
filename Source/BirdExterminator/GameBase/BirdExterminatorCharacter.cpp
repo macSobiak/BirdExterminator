@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/DefaultPawn.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -33,6 +34,9 @@ void ABirdExterminatorCharacter::BeginPlay()
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
+		const auto &CharacterMovementRef = GetCharacterMovement();
+		DefaultWalkingSpeed = CharacterMovementRef->MaxWalkSpeed;
+		CharacterMovementRef->JumpZVelocity = CharacterMovementRef->JumpZVelocity * JumpMultiplier;
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -58,6 +62,10 @@ void ABirdExterminatorCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABirdExterminatorCharacter::Look);
 		
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ABirdExterminatorCharacter::ShootPredatorBird);
+
+		//sprinting
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ABirdExterminatorCharacter::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ABirdExterminatorCharacter::StopSprint);
 	}
 }
 
@@ -98,5 +106,17 @@ void ABirdExterminatorCharacter::ShootPredatorBird(const FInputActionValue& Valu
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 	GameMode->BirdsController->SpawnPredatorBird(SpawnLocation, SpawnRotation, ActorSpawnParams);
+}
+
+
+void ABirdExterminatorCharacter::StartSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkingSpeed * SprintMultiplier;
+}
+
+void ABirdExterminatorCharacter::StopSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkingSpeed;
+
 }
 
