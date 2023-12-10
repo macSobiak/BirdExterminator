@@ -9,6 +9,7 @@
 class UGameDataTrackingPanel;
 class UPromptWithButtons;
 class ABirdsController;
+
 UCLASS()
 class BIRDEXTERMINATOR_API AUIController : public AActor
 {
@@ -18,15 +19,9 @@ public:
 	// Sets default values for this actor's properties
 	AUIController();
 	void InitializeInterfaceElements(ABirdsController* BirdsControllerInstance);
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	void ShowPopup(const FString &PopupMessage);
+
+private:	
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameDataTrackingPanel> GameDataTrackingPanelWidget;

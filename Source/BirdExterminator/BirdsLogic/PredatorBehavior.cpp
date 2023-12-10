@@ -13,12 +13,11 @@ PredatorBehavior::~PredatorBehavior()
 {
 }
 
-FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
+inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
 	float NearestDistance;
-	const auto NearestBird = BirdOwner->BirdsController->GetNearestBird(CurrentLocation, NearestDistance);
 
-	if(NearestBird)
+	if(const auto &NearestBird = BirdOwner->BirdsController->GetNearestBird(CurrentLocation, NearestDistance); NearestBird)
 	{
 		ConsumeEnergyAndGiveBonusIfPossible(DeltaTime, NearestDistance);
 		return FMath::RInterpConstantTo(CurrentRotation,(NearestBird->GetActorLocation() - CurrentLocation).Rotation(), DeltaTime, TurnSpeed);
@@ -35,7 +34,7 @@ FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime, const
 	return CurrentRotation;
 }
 
-bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
+inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 {
 	ABird* BirdActor = Cast<ABird>(ActorHit);
 	if(BirdActor && BirdActor->IsDestructable)
@@ -48,14 +47,14 @@ bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 	return false;
 }
 
-void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)
+inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)
 {
 	if(NearestDistance < BoostDistance && Energy > 0)
 	{
 		Energy -= EnergyLossPerSec * DeltaTime;
 		//UE_LOG(LogTemp, Error, TEXT("Energy CONSUUUME %f"), Energy);
 		InitialVelocity = 700;
-		TurnSpeed = 300;
+		TurnSpeed = 250;
 
 		if(Energy <= 0)
 		{
@@ -72,7 +71,7 @@ void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTim
 
 }
 
-void PredatorBehavior::ResetSpeedBonus()
+inline void PredatorBehavior::ResetSpeedBonus()
 {
 	InitialVelocity = 500;
 	TurnSpeed = 230;

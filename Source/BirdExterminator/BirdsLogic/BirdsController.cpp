@@ -10,15 +10,19 @@
 ABirdsController::ABirdsController()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-}
+	ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Script/Engine.Material'/Game/Materials/M_Prey.M_Prey'"));
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterialPrey = FoundMaterial.Object;
+	}
 
-// Called when the game starts or when spawned
-void ABirdsController::BeginPlay()
-{
-	Super::BeginPlay();
-	
+	FoundMaterial = (TEXT("/Script/Engine.Material'/Game/Materials/M_Predator.M_Predator'"));
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterialPredator = FoundMaterial.Object;
+	}
 }
 
 void ABirdsController::Destroyed()
@@ -30,24 +34,17 @@ void ABirdsController::Destroyed()
 	OnPredatorAliveCountChangedEvent.Clear();
 }
 
-// Called every frame
-void ABirdsController::Tick(float DeltaTime)
+inline void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
 {
-	Super::Tick(DeltaTime);
-}
-
-void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
-{
-	BirdFlocks = BirdFlockCount;
-	BirdFlocksArray.Reserve(BirdFlocks);
+	BirdFlocksArray.Reserve(BirdFlockCount);
 	PlayableArea = PlayableAreaRef;
 	
-	SpawnBirdFlocks(BirdFlocks);
+	SpawnBirdFlocks(BirdFlockCount);
 
 	IsInitialized = true;
 }
 
-AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
+inline AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
@@ -55,8 +52,7 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Dis
 	{
 		for (int j=0; j < BirdFlocksArray[i]->BirdArray.Num(); ++j)
 		{
-			const float Dist = (LocationFrom - BirdFlocksArray[i]->BirdArray[j]->GetActorLocation()).SizeSquared();
-			if(MinDistance > Dist)
+			if(const float Dist = (LocationFrom - BirdFlocksArray[i]->BirdArray[j]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 			{
 				MinDistance = Dist;
 				NearestActor = BirdFlocksArray[i]->BirdArray[j];
@@ -65,8 +61,7 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Dis
 	}
 	for (int i=0; i < FreeBirdsArray.Num(); ++i)
 	{
-		const float Dist = (LocationFrom - FreeBirdsArray[i]->GetActorLocation()).SizeSquared();
-		if(MinDistance > Dist)
+		if(const float Dist = (LocationFrom - FreeBirdsArray[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 		{
 			MinDistance = Dist;
 			NearestActor = FreeBirdsArray[i];
@@ -79,14 +74,14 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Dis
 	return NearestActor;
 }
 
-AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
+inline AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
+
 	for (int i=0; i < PredatorsArray.Num(); ++i)
 	{
-		const float Dist = (LocationFrom - PredatorsArray[i]->GetActorLocation()).SizeSquared();
-		if(MinDistance > Dist)
+		if(const float Dist = (LocationFrom - PredatorsArray[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 		{
 			MinDistance = Dist;
 			NearestActor = PredatorsArray[i];
@@ -99,7 +94,7 @@ AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float&
 	return NearestActor;
 }
 
-void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
+inline void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 {
 	FVector RandomSpawnPoint;
 	for(int i =0; i < BirdFlocksCount; ++i)
@@ -115,29 +110,20 @@ void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 		BirdFlocksArray.Add(BirdFlockSpawned);
 
 		PreyBirdsAlive += BirdsToSpawn;
-		
+
+		BirdFlockSpawned->OnDestroyed.AddDynamic(this, &ABirdsController::HandleBirdFlockDestroyed);
 		BirdFlockSpawned->OnBirdInFlockDestroyedChanged.AddUObject(this, &ABirdsController::BirdInFlockDestroyed);
 	}
 }
 
-void ABirdsController::DestroyBirdFlocks()
-{
-	for (int i=0; i < BirdFlocksArray.Num(); ++i)
-	{
-		BirdFlocksArray[i]->Destroy();
-	}
-
-	BirdFlocksArray.Reset();
-}
-
-void ABirdsController::RegisterAsFreeBird(ABird* Bird)
+inline void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 {
 	FreeBirdsArray.Add(Bird);
 	OnBirdCountChangedEvent.Broadcast(++PreyBirdsAlive);
 	Bird->OnBirdDestroyedEvent.AddUObject(this, &ABirdsController::HandleBirdDestroyed);
 }
 
-void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
+inline void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 {
 	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
 	OnPredatorAliveCountChangedEvent.Broadcast(++PredatorBirdsAlive);
@@ -145,7 +131,7 @@ void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 	PredatorsArray.Add(Bird);
 }
 
-void ABirdsController::UnregisterPredator(ABird* Bird)
+inline void ABirdsController::UnregisterPredator(ABird* Bird)
 {
 	OnPredatorAliveCountChangedEvent.Broadcast(--PredatorBirdsAlive);
 	
@@ -159,32 +145,28 @@ void ABirdsController::HandleBirdDestroyed(ABird* Bird)
 	FreeBirdsArray.Remove(Bird);
 }
 
-void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)
+void ABirdsController::HandleBirdFlockDestroyed(AActor* Actor)
+{
+	const auto BirdFlock = Cast<ABirdFlock>(Actor);
+	BirdFlock->OnDestroyed.RemoveAll(this);
+	BirdFlock->OnBirdInFlockDestroyedChanged.RemoveAll(this);
+
+	BirdFlocksArray.Remove(BirdFlock);
+}
+
+inline void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)
 {
 	if(PredatorBirdsAvailable <= 0)
 		return;
 	
-	UWorld* const World = GetWorld();
-	if (World != nullptr)
-	{
-		auto ActorSpawned = World->SpawnActor(PredatorBirdClass, &SpawnLocation, &SpawnRotator, SpawnParameters);
-		auto BirdSpawned = Cast<ABird>(ActorSpawned);
-		BirdSpawned->InitializeCommonObjects(this);
-		BirdSpawned->InitializeAsPredator(PlayableArea);
-		RegisterAsPredatorBird(BirdSpawned);
-	}
+	const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(PredatorBirdClass, &SpawnLocation, &SpawnRotator, SpawnParameters));
+	BirdSpawned->InitializeCommonObjects(this);
+	BirdSpawned->InitializeAsPredator(PlayableArea);
+	RegisterAsPredatorBird(BirdSpawned);
 }
 
 void ABirdsController::BirdInFlockDestroyed()
 {
 	OnBirdCountChangedEvent.Broadcast(--PreyBirdsAlive);
-}
-
-void ABirdsController::ReinitializeController()
-{
-	DestroyBirdFlocks();
-	SpawnBirdFlocks(BirdFlocks);
-
-	IsInitialized = true;
 }
 

@@ -28,13 +28,15 @@ public:
 	virtual ~ABird() override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	void RecoverFromHit();
-
+	void AdjustAppearance(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
+	void SetAppearance(UMaterial* MaterialToSet);
+	void SetCollision(const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -42,45 +44,37 @@ public:
 	void UnregisterModifier(const FRotator &VectorOffset, UCollisionPredictor *CollisionPredictor);
 
 	void InitializeCommonObjects(ABirdsController* BirdsControllerInstance);
-
-	void AdjustAppearance(UMaterial* MaterialToSet, const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
 	void InitializeAsPrey(ABirdFlock* BirdFlock, const int& PlaceInFlockRef, const FVector3f& PlayableAreaRef);
 	void TransformToPrey(const FVector3f& PlayableAreaRef);
 	void InitializeAsPredator(const FVector3f& PlayableAreaRef);
 	
-	void SetAppearance(UMaterial* MaterialToSet);
-	void SetCollision(const ECollisionChannel &ChannelToSet, const ECollisionResponse &ResponseToBirdPrey);
-	BirdBehavior* BirdBehaviorDefinition = nullptr;
-
 	FOnBirdDestroyed OnBirdDestroyedEvent;
-private:
+		
+	UPROPERTY()
+	ABirdsController* BirdsController;
 	
+private:
 	FRotator TurnSpeedRotator = FRotator(0, 0, 0);
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	UStaticMeshComponent* MeshComponent;
 
 	TArray<EColliderType> ActiveColliders;
 	TArray<EColliderType> CollidersToIgnore;
-
-	UPROPERTY()
-	UMaterial* StoredMaterialPrey = nullptr;
-	UPROPERTY()
-	UMaterial* StoredMaterialPredator = nullptr;
 	
-
 	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicMaterialInst;
-
+	
+	BirdBehavior* BirdBehaviorDefinition = nullptr;
+	
 	UPROPERTY(EditAnywhere)
 	float HitCooldown = 2;
-	
 	float CurrentCooldown = 0;
+	
 	bool IsOnHitCooldown = false;
 	bool IsInitialized = false;
+	
 public:
 	bool IsDestructable = false;
-	UPROPERTY()
-	ABirdsController* BirdsController;
 	
 };

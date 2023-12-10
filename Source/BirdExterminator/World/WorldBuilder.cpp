@@ -21,14 +21,14 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 	if(!FileParser->TryGetWorldDataFromConfigFile(WorldData, ErrorMessage))
 		return false;
 	
-	float BuildingSizeX = 100 * BuildingScaleX;
-	float BuildingSizeY = 100 * BuildingScaleY;
+	float BuildingSizeX = BuildingSize * BuildingScaleX;
+	float BuildingSizeY = BuildingSize * BuildingScaleY;
 	
 	FVector WorldSize = FVector( WorldData.WorldSizeX * (BuildingSizeX + DistanceBetweenBuildings) + DistanceBetweenBuildings,
 								WorldData.WorldSizeY * (BuildingSizeY + DistanceBetweenBuildings) + DistanceBetweenBuildings,
 								1);
 	
-	SetActorScale3D(WorldSize / 100);
+	SetActorScale3D(WorldSize / BuildingSize);
 
 	const float InitialPosX = (WorldSize.X / 2.0f) - BuildingSizeX / 2 - DistanceBetweenBuildings;
 	const float InitialPosY = (WorldSize.Y / 2.0f) - BuildingSizeY / 2 - DistanceBetweenBuildings;
@@ -43,8 +43,9 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 		for (int j = 0; j <  WorldData.BuildingHeightMatrix[i].size(); ++j)
 		{
 			auto BuildingSpawned = GetWorld()->SpawnActor(BuildingActor, &SpawnPosition);
-			auto BuildingHeight = WorldData.BuildingHeightMatrix[i][j];
+			float &BuildingHeight = WorldData.BuildingHeightMatrix[i][j];
 			BuildingSpawned->SetActorScale3D(FVector(BuildingScaleX, BuildingScaleY, BuildingHeight));
+			
 			SpawnPosition.X -= (BuildingSizeX + DistanceBetweenBuildings);
 
 			if(MaxBuildingHeight < BuildingHeight)
@@ -56,26 +57,26 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 		SpawnPosition.Y -= (BuildingSizeY + DistanceBetweenBuildings);
 	}
 
-	auto Character = UGameplayStatics::GetPlayerCharacter(this, 0);
-
-	bool IsMiddlePointOccupied = (WorldData.WorldSizeX % 2) > 0 && (WorldData.WorldSizeY % 2) > 0;
-	Character->SetActorLocation(FVector(IsMiddlePointOccupied ? (BuildingSizeX + DistanceBetweenBuildings)/2 : 0,
-		IsMiddlePointOccupied ? (BuildingSizeY + DistanceBetweenBuildings)/2 : 0,
-		100));
-
 	PlayableArea = FVector3f(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
+	ResetPlayerCharacter(WorldData.WorldSizeX, WorldData.WorldSizeY);
 
 	return true;
 }
 
-// Called when the game starts or when spawned
-void AWorldBuilder::BeginPlay()
+
+inline void AWorldBuilder::ResetPlayerCharacter(const uint16 &WorldSizeX, const uint16 &WorldSizeY)
 {
-	Super::BeginPlay();
+	auto Character = UGameplayStatics::GetPlayerCharacter(this, 0);
+
+	bool IsMiddlePointOccupied = (WorldSizeX % 2) > 0 && (WorldSizeY % 2) > 0;
+	Character->SetActorLocation(FVector(IsMiddlePointOccupied ? (BuildingSize * BuildingScaleX + DistanceBetweenBuildings)/2 : 0,
+		IsMiddlePointOccupied ? (BuildingSize * BuildingScaleY + DistanceBetweenBuildings)/2 : 0,
+		100));
 }
 
-void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const float& MaxBuildingHeight)
+
+inline void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const float& MaxBuildingHeight)
 {
 	FVector Bounds = FVector::Zero();
 	FVector Scale = FVector::One();
@@ -98,7 +99,7 @@ void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const float& M
 	SpawnInvisibleWall(Bounds, Scale);
 }
 
-void AWorldBuilder::SpawnInvisibleWall(const FVector& SpawnLocation, const FVector &ScaleVector)
+inline void AWorldBuilder::SpawnInvisibleWall(const FVector& SpawnLocation, const FVector &ScaleVector)
 {
 	GetWorld()->SpawnActor(InvisibleWallActor, &SpawnLocation)->SetActorScale3D(ScaleVector);
 }

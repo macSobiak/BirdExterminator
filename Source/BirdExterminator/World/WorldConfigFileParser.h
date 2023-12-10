@@ -21,14 +21,14 @@ struct FWorldData
 	}
 	std::vector<std::vector<float>> BuildingHeightMatrix;
 
-	size_t WorldSizeX = 5; 
-	size_t WorldSizeY = 4;
+	uint16 WorldSizeX = 5; 
+	uint16 WorldSizeY = 4;
 
 };
 
 class BIRDEXTERMINATOR_API WorldConfigFileParser
 {
-	void LogErrorMessage(const FString &ErrorMessage);
+	bool ReturnErrorAndSetMessage(const FString &ErrorMessageLog, FString &OutErrorMessage);
 public:
 	WorldConfigFileParser();
 	~WorldConfigFileParser();

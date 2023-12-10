@@ -16,14 +16,13 @@ public:
 	AWorldBuilder();
 	bool GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage);
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 private:
 
 	void SpawnInvisibleWall(const FVector &SpawnLocation, const FVector &ScaleVector);
 	void SpawnInvisibleWalls(const FVector &WorldSize, const float& MaxBuildingHeight);
+	void ResetPlayerCharacter(const uint16 &WorldSizeX, const uint16 &WorldSizeY);
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> BuildingActor;
 	UPROPERTY(EditAnywhere)
@@ -36,5 +35,6 @@ private:
 	float BuildingScaleX = 3;
 	UPROPERTY(EditAnywhere)
 	float BuildingScaleY = 2;
+	float BuildingSize = 100;
 
 };

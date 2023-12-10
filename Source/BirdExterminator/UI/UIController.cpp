@@ -12,8 +12,7 @@
 AUIController::AUIController()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AUIController::InitializeInterfaceElements(ABirdsController* BirdsControllerInstance)
@@ -28,20 +27,6 @@ void AUIController::InitializeInterfaceElements(ABirdsController* BirdsControlle
 	GameDataTrackingPanel->AddToViewport();
 	
 	Crosshair->AddToViewport();
-}
-
-// Called when the game starts or when spawned
-void AUIController::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AUIController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void AUIController::ShowPopup(const FString& PopupMessage)

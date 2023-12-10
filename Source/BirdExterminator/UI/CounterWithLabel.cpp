@@ -13,7 +13,7 @@ void UCounterWithLabel::InitializeElement(const int& MaxValue, const int& Curren
 
 }
 
-void UCounterWithLabel::RefreshCurrentCount(const int& CurrentValue)
+inline void UCounterWithLabel::RefreshCurrentCount(const int& CurrentValue)
 {
 	CurrentCounter->SetText(FText::AsNumber(CurrentValue));
 }

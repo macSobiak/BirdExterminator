@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CollisionPredictor.h"
 
 // Sets default values for this component's properties
@@ -8,7 +7,7 @@ UCollisionPredictor::UCollisionPredictor()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	// ...
 }
 
@@ -18,8 +17,6 @@ void UCollisionPredictor::OnOverlapCollisionPredictorBegin(UPrimitiveComponent* 
 	if(OtherActor == GetOwner())
 		return;
 
-	//GetOverlappingActors(OverlappingActors);
-	//if(OverlappingActors.Num() == 1)
 	if(CollidedObjectsCount == 0)
 		BirdOwner->RegisterModifier(DirectionToSet, this);
 
@@ -33,8 +30,6 @@ void UCollisionPredictor::OnOverlapCollisionPredictorEnd(UPrimitiveComponent* Ov
 		return;
 
 	CollidedObjectsCount--;
-	//GetOverlappingActors(OverlappingActors);
-	//if(OverlappingActors.Num() == 0)
 	
 	if(CollidedObjectsCount == 0)
 		BirdOwner->UnregisterModifier(DirectionToSet, this);
@@ -51,11 +46,4 @@ void UCollisionPredictor::BeginPlay()
 	OnComponentEndOverlap.AddUniqueDynamic(this, &UCollisionPredictor::OnOverlapCollisionPredictorEnd);
 }
 
-
-// Called every frame
-void UCollisionPredictor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	// ...
-}
 

@@ -16,38 +16,35 @@ class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 {
 	GENERATED_BODY()
 
-	void GenerateNewDestinationPoint();
-	void HandleBirdDestroyed(ABird* Bird);
 public:	
 	// Sets default values for this actor's properties
 	ABirdFlock();
-	void SpawnBirds(const int &BirdCount);
+	
 	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance);
-
+	virtual void Tick(float DeltaTime) override;
+	FVector GetPlaceInFlock(const int &PlaceInFlock);
+	
+private:
+	void GenerateNewDestinationPoint();
+	void HandleBirdDestroyed(ABird* Bird);
+	void SpawnBirds(const int &BirdCount);
+		
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
 	FOnBirdInFlockDestroyed OnBirdInFlockDestroyedChanged;
-	FVector GetPlaceInFlock(const int &PlaceInFlock);
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABird> BirdBlueprint;
 	TArray<ABird*> BirdArray;
-	TArray<FVector> PlaceInFlockMap;
 
+private:
+	TArray<FVector> PlaceInFlockPosition;
 	FVector FlockFlightDestination;
-	UPROPERTY(EditAnywhere)
 	FVector3f PlayableArea;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	ABirdsController *BirdsController;
-
 	bool IsInitialized = false;
-	int TrackedBirdCount = 0;
 
 };

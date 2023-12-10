@@ -16,12 +16,11 @@ PreyBehavior::~PreyBehavior()
 	BirdFlockToFollow = nullptr;
 }
 
-FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
+inline FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
 	float NearestDistance;
-	const auto NearestPredator = BirdOwner->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance);
-
-	if(NearestPredator)
+	
+	if(const auto &NearestPredator = BirdOwner->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance); NearestPredator)
 	{
 		if(GetIsOutOfBounds(CurrentLocation))
 		{
@@ -48,12 +47,12 @@ FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVe
 	return CurrentRotation;
 }
 
-bool PreyBehavior::HandleBirdHit(AActor* ActorHit)
+inline bool PreyBehavior::HandleBirdHit(AActor* ActorHit)
 {
 	return false;
 }
 
-FRotator PreyBehavior::GetRotationToBirdFlock(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const
+inline FRotator PreyBehavior::GetRotationToBirdFlock(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const
 {
 	return FMath::RInterpConstantTo(CurrentRotation,
 		(BirdFlockToFollow->GetPlaceInFlock(PlaceInFlock) - CurrentLocation).Rotation(),

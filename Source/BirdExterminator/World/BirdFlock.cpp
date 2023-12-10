@@ -5,14 +5,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Bird.h"
 
-void ABirdFlock::GenerateNewDestinationPoint()
-{
-	FlockFlightDestination = FVector(FMath::RandRange(-PlayableArea.X / 2, PlayableArea.X / 2),
-	FMath::RandRange(-PlayableArea.Y / 2, PlayableArea.Y / 2),
-	FMath::RandRange(10.0f, PlayableArea.Z));
-}
-
-
 // Sets default values
 ABirdFlock::ABirdFlock()
 {
@@ -21,9 +13,22 @@ ABirdFlock::ABirdFlock()
 
 }
 
-void ABirdFlock::SpawnBirds(const int &BirdCount)
+void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance)
 {
-	TrackedBirdCount = BirdCount;
+	BirdArray.Reserve(BirdCount);
+	PlaceInFlockPosition.Reserve(BirdCount);
+
+	PlayableArea = PlayableAreaRef;
+	BirdsController = BirdsControllerInstance;
+	
+	SpawnBirds(BirdCount);
+	GenerateNewDestinationPoint();
+
+	IsInitialized = true;
+}
+
+inline void ABirdFlock::SpawnBirds(const int &BirdCount)
+{
 	FVector SpawnPositionOffset = FVector::Zero();
 
 	const float Angle = 360 / (BirdCount - 1);
@@ -39,7 +44,7 @@ void ABirdFlock::SpawnBirds(const int &BirdCount)
 
 		auto SpawnPosition = GetActorLocation() + SpawnPositionOffset;
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
-		PlaceInFlockMap.Emplace(SpawnPositionOffset + FVector(0,10,0));
+		PlaceInFlockPosition.Emplace(SpawnPositionOffset + FVector(0,10,0));
 
 		BirdSpawned->InitializeCommonObjects(BirdsController);
 		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
@@ -60,29 +65,16 @@ void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
 	}
 }
 
-void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance)
+inline void ABirdFlock::GenerateNewDestinationPoint()
 {
-	BirdArray.Reserve(BirdCount);
-	PlaceInFlockMap.Reserve(BirdCount);
-
-	PlayableArea = PlayableAreaRef;
-	BirdsController = BirdsControllerInstance;
-	
-	SpawnBirds(BirdCount);
-	GenerateNewDestinationPoint();
-
-	IsInitialized = true;
+	FlockFlightDestination = FVector(FMath::RandRange(-PlayableArea.X / 2, PlayableArea.X / 2),
+	FMath::RandRange(-PlayableArea.Y / 2, PlayableArea.Y / 2),
+	FMath::RandRange(10.0f, PlayableArea.Z));
 }
 
 FVector ABirdFlock::GetPlaceInFlock(const int& PlaceInFlock)
 {
-	return GetActorLocation() + PlaceInFlockMap[PlaceInFlock];
-}
-
-// Called when the game starts or when spawned
-void ABirdFlock::BeginPlay()
-{
-	Super::BeginPlay();
+	return GetActorLocation() + PlaceInFlockPosition[PlaceInFlock];
 }
 
 void ABirdFlock::Destroyed()
