@@ -153,14 +153,18 @@ void ABird::Tick(float DeltaTime)
 	}
 	else
 	{
-		//always prioritize avoiding obstacles
-		AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->GetTurnSpeed() * DeltaTime));
+		//always prioritize avoiding obstacles (if is not a predator that just have beed launched)
+		if(BirdBehaviorDefinition->GetCanTurn(DeltaTime))
+		{
+			AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->GetTurnSpeed() * DeltaTime));
+
+			//if no collision avoidance happens
+			if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)
+				SetActorRotation(BirdBehaviorDefinition->GetDirectionConditional(DeltaTime, GetActorLocation(), GetActorRotation()));
+		}
+
 		//bird is always moving forward
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * (BirdBehaviorDefinition->GetMoveSpeed() * DeltaTime), true);
-
-		//if no collision avoidance happens
-		if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0 && BirdBehaviorDefinition)
-			SetActorRotation(BirdBehaviorDefinition->GetDirectionConditional(DeltaTime, GetActorLocation(), GetActorRotation()));
 	}
 }
 

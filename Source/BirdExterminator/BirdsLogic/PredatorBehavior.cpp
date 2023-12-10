@@ -37,13 +37,17 @@ inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime
 
 inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 {
-	ABird* BirdActor = Cast<ABird>(ActorHit);
+	const ABird* BirdActor = Cast<ABird>(ActorHit);
 	if(BirdActor && BirdActor->IsDestructable)
 	{
 		ActorHit->Destroy();
 		Energy += EnergyGainAfterKill;
 		return true;
 	}
+	
+	//if collided with something that is not a Prey, act normal
+	if(IsJustLaunched)
+		IsJustLaunched = false;
 	
 	return false;
 }
@@ -53,9 +57,28 @@ inline float PredatorBehavior::GetTurnSpeed() const
 	return IsOnBoost ? TurnSpeed * BoostMultiplier : TurnSpeed;
 }
 
+//apply free 2x boost when predator bird is shot in the same direction
 inline float PredatorBehavior::GetMoveSpeed() const
 {
-	return IsOnBoost ? MoveSpeed * BoostMultiplier: MoveSpeed;
+	return IsJustLaunched ? MoveSpeed * BoostMultiplier * 2 : (IsOnBoost ? MoveSpeed * BoostMultiplier : MoveSpeed);
+}
+
+inline bool PredatorBehavior::GetIsOnCooldownAndSetBoost(const float& DeltaTime)
+{
+	if(IsJustLaunched)
+	{
+		if((LaunchCooldown -= DeltaTime) > 0)
+		{
+			return true;
+		}
+		IsJustLaunched = false;
+	}
+	return false;
+}
+
+inline bool PredatorBehavior::GetCanTurn(const float& DeltaTime)
+{
+	return !GetIsOnCooldownAndSetBoost(DeltaTime);
 }
 
 inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)

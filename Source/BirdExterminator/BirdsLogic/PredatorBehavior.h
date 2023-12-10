@@ -12,6 +12,7 @@
 class BIRDEXTERMINATOR_API PredatorBehavior : public BirdBehavior
 {
 	void ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance);
+	bool GetIsOnCooldownAndSetBoost(const float& DeltaTime);
 
 public:
 	PredatorBehavior(ABird *ActorOwner, const FVector3f& PlayableAreaRef);
@@ -21,7 +22,7 @@ public:
 	virtual bool HandleBirdHit(AActor *ActorHit) override;
 	virtual float GetTurnSpeed() const override;
 	virtual float GetMoveSpeed() const override;
-	
+	virtual bool GetCanTurn(const float& DeltaTime) override;
 	float Energy = 100;
 	float EnergyLossPerSec = 25;
 	
@@ -29,5 +30,7 @@ public:
 	float BoostDistance = 500;
 	
 	float BoostMultiplier = 1.4;
+	float LaunchCooldown = 0.5;
+	bool IsJustLaunched = true;
 	bool IsOnBoost = false;
 };

@@ -22,6 +22,7 @@ public:
 	virtual FRotator GetRotationToMapCenter(float DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation) const;
 	virtual float GetTurnSpeed() const {return TurnSpeed;};
 	virtual float GetMoveSpeed() const {return MoveSpeed;};
+	virtual bool GetCanTurn(const float& DeltaTime) {return true;};
 
 protected:
 	FVector3f PlayableArea;
