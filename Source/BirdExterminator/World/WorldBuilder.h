@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "WorldBuilder.generated.h"
 
+/**
+ * class responsible for getting the world data with building sizes, quantity and placing actual actors in the world
+ * also adjusts the ground plane and creates invisible walls and places character on the middle of the map if possible
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API AWorldBuilder : public AActor
 {

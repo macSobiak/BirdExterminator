@@ -9,6 +9,10 @@
 class AUIController;
 class AWorldBuilder;
 class ABirdsController;
+
+/**
+ * Game mode that initializes all needed game components, like world, birds and UI, also checks win/lose conditions when events occur 
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdExterminatorGameMode : public AGameModeBase
 {
@@ -23,7 +27,7 @@ private:
 
 public:
 	
-	void CheckWinLooseConditions(const int &_);
+	void CheckWinLoseConditions(const int &_);
 	
 	UPROPERTY()
 	ABirdsController* BirdsController;

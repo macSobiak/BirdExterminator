@@ -5,6 +5,7 @@
 
 #include "BirdExterminator/World/Bird.h"
 #include "BirdExterminator/World/BirdFlock.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABirdsController::ABirdsController()
@@ -49,49 +50,42 @@ void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const uint16
 	IsInitialized = true;
 }
 
-AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance)
+inline void ABirdsController::FindNearestInVector(const FVector& LocationFrom, const std::vector<ABird*> &BirdsVector, AActor *&NearestActor, float& CurrentMinDistance)
+{
+	for (int i=0; i < BirdsVector.size(); ++i)
+	{
+		if(const float Dist = (LocationFrom - BirdsVector[i]->GetActorLocation()).SizeSquared(); CurrentMinDistance > Dist)
+		{
+			CurrentMinDistance = Dist;
+			NearestActor = BirdsVector[i];
+		}
+	}
+}
+
+AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Distance) const
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
+
+	FindNearestInVector(LocationFrom, FreeBirdsVector, NearestActor, MinDistance);
+
 	for (int i=0; i < BirdFlocksVector.size(); ++i)
 	{
-		for (int j=0; j < BirdFlocksVector[i]->BirdVector.size(); ++j)
-		{
-			if(const float Dist = (LocationFrom - BirdFlocksVector[i]->BirdVector[j]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
-			{
-				MinDistance = Dist;
-				NearestActor = BirdFlocksVector[i]->BirdVector[j];
-			}
-		}
-	}
-	for (int i=0; i < FreeBirdsVector.size(); ++i)
-	{
-		if(const float Dist = (LocationFrom - FreeBirdsVector[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
-		{
-			MinDistance = Dist;
-			NearestActor = FreeBirdsVector[i];
-		}
+		FindNearestInVector(LocationFrom, BirdFlocksVector[i]->BirdVector, NearestActor, MinDistance);
 	}
 
 	if(NearestActor)
-		Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());
+		Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation()); 
 	
 	return NearestActor;
 }
 
-AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance)
+AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float& Distance) const
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
 
-	for (int i=0; i < PredatorsVector.size(); ++i)
-	{
-		if(const float Dist = (LocationFrom - PredatorsVector[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
-		{
-			MinDistance = Dist;
-			NearestActor = PredatorsVector[i];
-		}
-	}
+	FindNearestInVector(LocationFrom, PredatorsVector, NearestActor, MinDistance);
 
 	if(NearestActor)
 		Distance = FVector::Dist(LocationFrom, NearestActor->GetActorLocation());

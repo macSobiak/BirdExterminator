@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "PromptWithButtons.generated.h"
 
+/**
+ * Prompt class adapted to display message and handle button click to exit the game
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API UPromptWithButtons : public UUserWidget
 {

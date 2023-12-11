@@ -44,6 +44,8 @@ inline void ABirdFlock::SpawnBirds(const int &BirdCount)
 
 		auto SpawnPosition = GetActorLocation() + SpawnPositionOffset;
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
+
+		//store all birds spawn position for them to have some unique point to follow in flock
 		PlaceInFlockPosition.push_back(SpawnPositionOffset + FVector(0,10,0));
 
 		BirdSpawned->InitializeCommonObjects(BirdsController);

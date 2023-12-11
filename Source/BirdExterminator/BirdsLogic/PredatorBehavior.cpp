@@ -17,6 +17,7 @@ inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime
 {
 	float NearestDistance;
 
+	//always prioritize chasing nearest prey bird
 	if(const auto &NearestBird = BirdOwner->BirdsController->GetNearestBird(CurrentLocation, NearestDistance); NearestBird)
 	{
 		ConsumeEnergyAndGiveBonusIfPossible(DeltaTime, NearestDistance);
@@ -35,6 +36,7 @@ inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime
 	return CurrentRotation;
 }
 
+//when hit bird, check if should be destroyed and destroy if needed
 inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 {
 	const ABird* BirdActor = Cast<ABird>(ActorHit);
@@ -54,6 +56,7 @@ inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 	return false;
 }
 
+//predators should be able to turn more sharply when on boost
 inline float PredatorBehavior::GetTurnSpeed() const
 {
 	return (BoostType == Standard || BoostType == Mini) ? TurnSpeed * BoostMultiplier * 2 : TurnSpeed;
@@ -87,6 +90,7 @@ inline bool PredatorBehavior::GetIsOnCooldownAndSetBoost(const float& DeltaTime)
 	return false;
 }
 
+//should turn only if launch cooldown has passed
 inline bool PredatorBehavior::GetCanTurn(const float& DeltaTime)
 {
 	return !GetIsOnCooldownAndSetBoost(DeltaTime);
@@ -94,40 +98,34 @@ inline bool PredatorBehavior::GetCanTurn(const float& DeltaTime)
 
 inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)
 {
-	if(Energy <= 0)
+	float EnergyLoss;
+	//if predators is very close, apply maximum boost multiplier
+	if(NearestDistance < BoostDistance)
 	{
-		if(BoostType != None)
-			BoostType = None;
+		BoostType = Standard;
+		EnergyLoss = EnergyLossPerSec;
+	}
+	//if predators is very close, but still quite far, apply mini boos to close up to prey
+	else if (NearestDistance < MiniBoostDistance)
+	{
+		BoostType = Mini;
+		EnergyLoss = EnergyLossPerSec / 2;
 	}
 	else
 	{
-		float EnergyLoss;
-		//if predators is very close, apply maximum boost multiplier
-		if(NearestDistance < BoostDistance)
-		{
-			BoostType = Standard;
-			EnergyLoss = EnergyLossPerSec;
-		}
-		//if predators is very close, but still quite far, apply mini boos to close up to prey
-		else if (NearestDistance < MiniBoostDistance)
-		{
-			BoostType = Mini;
-			EnergyLoss = EnergyLossPerSec / 2;
-		}
-		else
-		{
-			BoostType = None;
-			return;
-		}
+		BoostType = None;
+		return;
+	}
 
-		Energy -= EnergyLoss * DeltaTime;
+	Energy -= EnergyLoss * DeltaTime;
 
-		if(Energy <= 0)
-		{
-			BirdOwner->BirdsController->UnregisterPredator(BirdOwner);
-			BirdOwner->BirdsController->RegisterAsFreeBird(BirdOwner);
-		
-			BirdOwner->TransformToPrey();
-		}
+	//transform to prey if no energy
+	if(Energy <= 0)
+	{
+
+		BirdOwner->BirdsController->UnregisterPredator(BirdOwner);
+		BirdOwner->BirdsController->RegisterAsFreeBird(BirdOwner);
+	
+		BirdOwner->TransformToPrey();
 	}
 }

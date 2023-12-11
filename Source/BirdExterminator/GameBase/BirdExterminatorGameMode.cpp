@@ -28,14 +28,16 @@ void ABirdExterminatorGameMode::BeginPlay()
 	
 	BirdsController->Initialize(PlayableArea, BirdFlocksToSpawn, PredatorBirdsAvailable);
 
-	BirdsController->OnBirdCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
-	BirdsController->OnPredatorCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
-	BirdsController->OnPredatorAliveCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
+	BirdsController->OnBirdCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLoseConditions);
+	BirdsController->OnPredatorCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLoseConditions);
+	BirdsController->OnPredatorAliveCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLoseConditions);
 
 	UIController->InitializeInterfaceElements(BirdsController);
+
+	CheckWinLoseConditions(0);
 }
 
-void ABirdExterminatorGameMode::CheckWinLooseConditions(const int& _)
+void ABirdExterminatorGameMode::CheckWinLoseConditions(const int& _)
 {
 	if(BirdsController->PreyBirdsAlive == 0)
 	{

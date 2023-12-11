@@ -40,6 +40,7 @@ void ABird::Destroyed()
 
 #pragma region BirdBehaviorAndAppearance
 
+//get mesh to change its appearance when needed and apply force on collision
 void ABird::InitializeCommonObjects(ABirdsController* BirdsControllerInstance)
 {
 	BirdsController = BirdsControllerInstance;
@@ -91,6 +92,7 @@ inline void ABird::SetAppearance(UMaterial* MaterialToSet)
 	MeshComponent->SetMaterial(0, DynamicMaterialInst);
 }
 
+//predators should ignore collision avoidance with Prey birds, because they want to hit them
 inline void ABird::SetCollision(const ECollisionChannel& ChannelToSet, const ECollisionResponse& ResponseToBirdPrey)
 {
 	MeshComponent->SetCollisionObjectType(ChannelToSet);
@@ -105,6 +107,7 @@ inline void ABird::SetCollision(const ECollisionChannel& ChannelToSet, const ECo
 
 #pragma endregion
 
+//add impulse on hit to simulate the hit with physics (also turn on gravity)
 void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                   FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -122,7 +125,7 @@ void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrim
 	IsOnHitCooldown = true;
 }
 
-
+//after hit reset all velocities and turn the bird up, also place it 1 unit above ground to avoid another accidental hit when on ground
 inline void ABird::RecoverFromHit()
 {
 	IsOnHitCooldown = false;
@@ -158,7 +161,7 @@ void ABird::Tick(float DeltaTime)
 		{
 			AddActorLocalRotation(TurnSpeedRotator * (BirdBehaviorDefinition->GetTurnSpeed() * DeltaTime));
 
-			//if no collision avoidance happens, make standard decisions like keep in playable area or target prey bird
+			//if no collision avoidance happens, make standard decisions like keep in playable area, follow bird flock or target prey bird
 			if(TurnSpeedRotator.Pitch == 0 && TurnSpeedRotator.Yaw == 0)
 				SetActorRotation(BirdBehaviorDefinition->GetDirectionConditional(DeltaTime, GetActorLocation(), GetActorRotation()));
 		}
@@ -168,6 +171,7 @@ void ABird::Tick(float DeltaTime)
 	}
 }
 
+//register collision detection modifier, only if not already registered and is not of a type to ignore right now
 void ABird::RegisterModifier(const FRotator& VectorOffset, UCollisionPredictor *CollisionPredictor)
 {
 	for(int i =0; i < CollidersToIgnore.Num(); ++i)
@@ -187,6 +191,7 @@ void ABird::RegisterModifier(const FRotator& VectorOffset, UCollisionPredictor *
 	TurnSpeedRotator += VectorOffset;
 }
 
+//unregister collision detection modifier only when it was registered before
 void ABird::UnregisterModifier(const FRotator& VectorOffset, UCollisionPredictor *CollisionPredictor)
 {
 	bool ColliderFound = false;

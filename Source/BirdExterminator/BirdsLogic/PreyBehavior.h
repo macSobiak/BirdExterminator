@@ -6,7 +6,10 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * Behavior of a Prey Bird:
+ * following Bird Flock, if not available (in case the bird was created from Predator) it just moves ahead
+ * keeping in world bounds
+ * flying in opposite direction as vector to nearest Predator detected
  */
 class BIRDEXTERMINATOR_API PreyBehavior : public BirdBehavior
 {

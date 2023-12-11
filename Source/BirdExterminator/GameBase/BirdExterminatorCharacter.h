@@ -11,6 +11,10 @@ class ABirdExterminatorGameMode;
 class UInputComponent;
 class UCameraComponent;
 
+/**
+ * Default game character that has ability to move, sprint, jump and shoot Predator birds when available
+ */
+
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdExterminatorCharacter : public ACharacter
 {

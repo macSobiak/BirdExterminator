@@ -7,6 +7,12 @@
 #include "Bird.h"
 #include "CollisionPredictor.generated.h"
 
+/**
+ * Box Component that informs a Bird Actor if anything is overlapping with it to change the direction of the flight
+ * in order to avoid detected obstacle
+ * ignores other components of this type and the owner Actor itself
+ */
+
 UENUM()
 enum class EColliderType : uint8
 {
@@ -42,6 +48,7 @@ protected:
 
 public:	
 
+	//when registering collision, this type is also saved to ignore when it wants to also register (the opposite sides that could negate te turn vector)
 	UPROPERTY(EditAnywhere)
 	EColliderType ColliderTypeToIgnore;
 	UPROPERTY(EditAnywhere)

@@ -19,13 +19,16 @@ PreyBehavior::~PreyBehavior()
 inline FRotator PreyBehavior::GetDirectionConditional(const float& DeltaTime, const FVector& CurrentLocation, const FRotator& CurrentRotation)
 {
 	float NearestDistance;
-	
+
+	//prioritize avioding predators
 	if(const auto &NearestPredator = BirdOwner->BirdsController->GetNearestPredator(CurrentLocation, NearestDistance); NearestPredator)
 	{
+		//if flying away from predator and out of bounds -> turn back
 		if(GetIsOutOfBounds(CurrentLocation))
 		{
 			return GetRotationToMapCenter(DeltaTime, CurrentLocation, CurrentRotation);
 		}
+		//fly away from predator
 		if(NearestDistance < DangerDistance)
 		{
 			return FMath::RInterpConstantTo(CurrentRotation,((NearestPredator->GetActorLocation() - CurrentLocation).Rotation()) * -1, DeltaTime, GetTurnSpeed());

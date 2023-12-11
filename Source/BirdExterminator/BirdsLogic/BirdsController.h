@@ -11,6 +11,11 @@ class ABird;
 
 DECLARE_EVENT_OneParam(ABirdsController, FOnBirdCountChanged, const int&);
 
+/**
+ * Main Bird Controller -> creates Bird Flocks, handles Bird destroyed events, keeps track of all counters
+ * provides methods for getting nearest Prey / Predator birds
+ * provides information for win / lose conditions
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdsController : public AActor
 {
@@ -21,8 +26,8 @@ public:
 	ABirdsController();
 	void Initialize(const FVector3f &PlayableAreaRef, const uint16 &BirdFlocksCount, const uint16 &PredatorBirdsAmmo);
 
-	AActor* GetNearestBird(const FVector &LocationFrom, float &Distance);
-	AActor* GetNearestPredator(const FVector &LocationFrom, float &Distance);
+	AActor* GetNearestBird(const FVector &LocationFrom, float &Distance) const;
+	AActor* GetNearestPredator(const FVector &LocationFrom, float &Distance) const;
 	void RegisterAsFreeBird(ABird* Bird);
 	void RegisterAsPredatorBird(ABird* Bird);
 	void UnregisterPredator(ABird* Bird);
@@ -37,6 +42,7 @@ private:
 	void HandleBirdFlockDestroyed(AActor* Actor);
 	void BirdInFlockDestroyed();
 	void SpawnBirdFlocks(const int& BirdFlocksCount);
+	static void FindNearestInVector(const FVector& LocationFrom, const std::vector<ABird*> &BirdsVector, AActor *&NearestActor, float& CurrentMinDistance);
 
 public:
 	FOnBirdCountChanged OnBirdCountChangedEvent;

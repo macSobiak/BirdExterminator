@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * Base Bird Behavior class, contains common behaviors like keeping in world bounds and getting move / turn speeds
  */
 class ABird;
 class ABirdFlock;

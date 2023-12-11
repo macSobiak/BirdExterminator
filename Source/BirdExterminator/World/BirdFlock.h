@@ -11,6 +11,10 @@ class ABirdsController;
 
 DECLARE_EVENT(ABirdFlock, FOnBirdInFlockDestroyed);
 
+/**
+ * a virtual point that spawns the birds and creates a place for all birds that belong to it to follow
+ * this point is moving across the map to random point, all birds from this flock are following it
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API ABirdFlock : public AActor
 {

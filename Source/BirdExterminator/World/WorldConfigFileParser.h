@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * struct containing all data required to build a world with flat plane as ground and scale the cubes to the size of buildings
  */
 struct FWorldData
 {
@@ -26,6 +26,9 @@ struct FWorldData
 
 };
 
+/**
+ * class responsible for parsing config file located in project config directory, named WorldConfig.txt and returning the data for world building
+ */
 class BIRDEXTERMINATOR_API WorldConfigFileParser
 {
 	bool ReturnErrorAndSetMessage(const FString &ErrorMessageLog, FString &OutErrorMessage);

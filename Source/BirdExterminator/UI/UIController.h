@@ -10,6 +10,9 @@ class UGameDataTrackingPanel;
 class UPromptWithButtons;
 class ABirdsController;
 
+/**
+ * Main UI Controller object that creates needed widgets and also initializes and shows them when asked. 
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API AUIController : public AActor
 {

@@ -33,7 +33,7 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 	const float InitialPosX = (WorldSize.X / 2.0f) - BuildingSizeX / 2 - DistanceBetweenBuildings;
 	const float InitialPosY = (WorldSize.Y / 2.0f) - BuildingSizeY / 2 - DistanceBetweenBuildings;
 
-	float MaxBuildingHeight = 0;
+	float MaxBuildingHeight = 500;//this should be the lowest possible playable area
 	FVector SpawnPosition = FVector(InitialPosX, InitialPosY, 0);
 
 	for (int i = 0; i < WorldData.BuildingHeightMatrix.size(); ++i)
@@ -44,7 +44,7 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 		{
 			auto BuildingSpawned = GetWorld()->SpawnActor(BuildingActor, &SpawnPosition);
 			float &BuildingHeight = WorldData.BuildingHeightMatrix[i][j];
-			BuildingSpawned->SetActorScale3D(FVector(BuildingScaleX, BuildingScaleY, BuildingHeight));
+			BuildingSpawned->SetActorScale3D(FVector(BuildingScaleX, BuildingScaleY, BuildingHeight/100));
 			
 			SpawnPosition.X -= (BuildingSizeX + DistanceBetweenBuildings);
 
@@ -57,7 +57,7 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 		SpawnPosition.Y -= (BuildingSizeY + DistanceBetweenBuildings);
 	}
 
-	PlayableArea = FVector3f(WorldSize.X, WorldSize.Y, MaxBuildingHeight*100);
+	PlayableArea = FVector3f(WorldSize.X, WorldSize.Y, MaxBuildingHeight);
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
 	ResetPlayerCharacter(WorldData.WorldSizeX, WorldData.WorldSizeY);
 
@@ -83,7 +83,7 @@ inline void AWorldBuilder::SpawnInvisibleWalls(const FVector &WorldSize, const f
 
 	Bounds.X = -WorldSize.X / 2;
 	Scale.Y = WorldSize.Y / 100;
-	Scale.Z = DistanceBetweenBuildings/100 + MaxBuildingHeight;
+	Scale.Z = DistanceBetweenBuildings/100 + MaxBuildingHeight/100;
 	SpawnInvisibleWall(Bounds, Scale);
 
 	Bounds.X = WorldSize.X / 2;

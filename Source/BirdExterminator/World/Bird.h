@@ -17,6 +17,12 @@ enum class EColliderType : uint8;
 
 DECLARE_EVENT_OneParam(ABird, FOnBirdDestroyed, ABird*);
 
+/**
+ * main class of a Bird that flies in the world. Bird has a default behavior of avoiding obstacles and moving forward
+ * it also contains a pointer to specific behavior implementation (BirdBehavior). This class sets the direction for a Bird (Prey or Predator)
+ * to follow, for example BirdFlock point or Nearest Prey point. Bird can be initialized as Prey or Predator and - appearance and behavior changes
+ */
+
 UCLASS()
 class BIRDEXTERMINATOR_API ABird : public AStaticMeshActor
 {

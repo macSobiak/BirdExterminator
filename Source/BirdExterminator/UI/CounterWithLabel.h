@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "CounterWithLabel.generated.h"
 
+/**
+ * Class for a widget that holds Counter values and a Label besides it
+ */
 UCLASS()
 class BIRDEXTERMINATOR_API UCounterWithLabel : public UUserWidget
 {

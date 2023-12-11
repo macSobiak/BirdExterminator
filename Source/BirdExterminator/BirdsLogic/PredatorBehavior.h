@@ -6,7 +6,12 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * Behavior of a Predator Bird:
+ * when initialized (shot) flies forward with free doubled boost to give more control over aiming and shooting for a LaunchCooldown amount of time
+ * after LaunchCooldown - following nearest Prey Bird, consuming energy and applying boost to move and turn speed (2 levels of boost depending on distance to target)
+ * when collided with destructable Prey Bird - destroys the Prey Bird and gains some Energy back
+ * keeping in world bounds
+ * when out of energy transforming to Prey behavior (deleting this behavior class and initializing as Prey on Bird owner class)
  */
 enum EBoostType : uint8
 {
