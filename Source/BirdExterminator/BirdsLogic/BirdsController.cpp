@@ -37,7 +37,11 @@ void ABirdsController::Destroyed()
 void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const uint16 &BirdFlockCount, const uint16 &PredatorBirdsAmmo)
 {
 	PredatorBirdsAvailable = PredatorBirdsAmmo;
-	BirdFlocksArray.Reserve(BirdFlockCount);
+	
+	BirdFlocksVector.reserve(BirdFlockCount);
+	PredatorsVector.reserve(PredatorBirdsAvailable);
+	FreeBirdsVector.reserve(PredatorBirdsAvailable);
+	
 	PlayableArea = PlayableAreaRef;
 	
 	SpawnBirdFlocks(BirdFlockCount);
@@ -49,23 +53,23 @@ AActor* ABirdsController::GetNearestBird(const FVector& LocationFrom, float &Dis
 {
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
-	for (int i=0; i < BirdFlocksArray.Num(); ++i)
+	for (int i=0; i < BirdFlocksVector.size(); ++i)
 	{
-		for (int j=0; j < BirdFlocksArray[i]->BirdArray.Num(); ++j)
+		for (int j=0; j < BirdFlocksVector[i]->BirdVector.size(); ++j)
 		{
-			if(const float Dist = (LocationFrom - BirdFlocksArray[i]->BirdArray[j]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
+			if(const float Dist = (LocationFrom - BirdFlocksVector[i]->BirdVector[j]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 			{
 				MinDistance = Dist;
-				NearestActor = BirdFlocksArray[i]->BirdArray[j];
+				NearestActor = BirdFlocksVector[i]->BirdVector[j];
 			}
 		}
 	}
-	for (int i=0; i < FreeBirdsArray.Num(); ++i)
+	for (int i=0; i < FreeBirdsVector.size(); ++i)
 	{
-		if(const float Dist = (LocationFrom - FreeBirdsArray[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
+		if(const float Dist = (LocationFrom - FreeBirdsVector[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 		{
 			MinDistance = Dist;
-			NearestActor = FreeBirdsArray[i];
+			NearestActor = FreeBirdsVector[i];
 		}
 	}
 
@@ -80,12 +84,12 @@ AActor* ABirdsController::GetNearestPredator(const FVector& LocationFrom, float&
 	AActor* NearestActor = nullptr;
 	float MinDistance = Distance = TNumericLimits<float>::Max();
 
-	for (int i=0; i < PredatorsArray.Num(); ++i)
+	for (int i=0; i < PredatorsVector.size(); ++i)
 	{
-		if(const float Dist = (LocationFrom - PredatorsArray[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
+		if(const float Dist = (LocationFrom - PredatorsVector[i]->GetActorLocation()).SizeSquared(); MinDistance > Dist)
 		{
 			MinDistance = Dist;
-			NearestActor = PredatorsArray[i];
+			NearestActor = PredatorsVector[i];
 		}
 	}
 
@@ -108,7 +112,7 @@ inline void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 		int BirdsToSpawn = FMath::RandRange(5,8);
 		BirdFlockSpawned->Initialize(PlayableArea, BirdsToSpawn, this);
 
-		BirdFlocksArray.Add(BirdFlockSpawned);
+		BirdFlocksVector.push_back(BirdFlockSpawned);
 
 		PreyBirdsAlive += BirdsToSpawn;
 
@@ -119,7 +123,7 @@ inline void ABirdsController::SpawnBirdFlocks(const int& BirdFlocksCount)
 
 void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 {
-	FreeBirdsArray.Add(Bird);
+	FreeBirdsVector.push_back(Bird);
 	OnBirdCountChangedEvent.Broadcast(++PreyBirdsAlive);
 	Bird->OnBirdDestroyedEvent.AddUObject(this, &ABirdsController::HandleBirdDestroyed);
 }
@@ -127,7 +131,7 @@ void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 inline void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 {
 	OnPredatorAliveCountChangedEvent.Broadcast(++PredatorBirdsAlive);
-	PredatorsArray.Add(Bird);
+	PredatorsVector.push_back(Bird);
 	
 	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
 }
@@ -135,15 +139,14 @@ inline void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 void ABirdsController::UnregisterPredator(ABird* Bird)
 {
 	OnPredatorAliveCountChangedEvent.Broadcast(--PredatorBirdsAlive);
-	
-	PredatorsArray.Remove(Bird);
+	std::erase(PredatorsVector, Bird);
 }
 
 void ABirdsController::HandleBirdDestroyed(ABird* Bird)
 {
 	Bird->OnBirdDestroyedEvent.RemoveAll(this);
 	OnBirdCountChangedEvent.Broadcast(--PreyBirdsAlive);
-	FreeBirdsArray.Remove(Bird);
+	std::erase(FreeBirdsVector, Bird);
 }
 
 void ABirdsController::HandleBirdFlockDestroyed(AActor* Actor)
@@ -152,7 +155,7 @@ void ABirdsController::HandleBirdFlockDestroyed(AActor* Actor)
 	BirdFlock->OnDestroyed.RemoveAll(this);
 	BirdFlock->OnBirdInFlockDestroyedChanged.RemoveAll(this);
 
-	BirdFlocksArray.Remove(BirdFlock);
+	std::erase(BirdFlocksVector, BirdFlock);
 }
 
 void ABirdsController::SpawnPredatorBird(const FVector &SpawnLocation, const FRotator &SpawnRotator, const FActorSpawnParameters &SpawnParameters)

@@ -36,10 +36,10 @@ public:
 	FOnBirdInFlockDestroyed OnBirdInFlockDestroyedChanged;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABird> BirdBlueprint;
-	TArray<ABird*> BirdArray;
+	std::vector<ABird*> BirdVector;
 
 private:
-	TArray<FVector> PlaceInFlockPosition;
+	std::vector<FVector> PlaceInFlockPosition;
 	FVector FlockFlightDestination;
 	FVector3f PlayableArea;
 	

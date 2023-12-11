@@ -15,8 +15,8 @@ ABirdFlock::ABirdFlock()
 
 void ABirdFlock::Initialize(const FVector3f &PlayableAreaRef, const int &BirdCount, ABirdsController *BirdsControllerInstance)
 {
-	BirdArray.Reserve(BirdCount);
-	PlaceInFlockPosition.Reserve(BirdCount);
+	BirdVector.reserve(BirdCount);
+	PlaceInFlockPosition.reserve(BirdCount);
 
 	PlayableArea = PlayableAreaRef;
 	BirdsController = BirdsControllerInstance;
@@ -44,22 +44,22 @@ inline void ABirdFlock::SpawnBirds(const int &BirdCount)
 
 		auto SpawnPosition = GetActorLocation() + SpawnPositionOffset;
 		const auto BirdSpawned = Cast<ABird>(GetWorld()->SpawnActor(BirdBlueprint, &SpawnPosition));
-		PlaceInFlockPosition.Emplace(SpawnPositionOffset + FVector(0,10,0));
+		PlaceInFlockPosition.push_back(SpawnPositionOffset + FVector(0,10,0));
 
 		BirdSpawned->InitializeCommonObjects(BirdsController);
 		BirdSpawned->InitializeAsPrey(this, i, PlayableArea);
 		BirdSpawned->OnBirdDestroyedEvent.AddUObject(this, &ABirdFlock::HandleBirdDestroyed);
-		BirdArray.Add(BirdSpawned);
+		BirdVector.push_back(BirdSpawned);
 	}
 }
 
 void ABirdFlock::HandleBirdDestroyed(ABird* Bird)
 {
 	Bird->OnBirdDestroyedEvent.RemoveAll(this);
-	BirdArray.Remove(Bird);
+	std::erase(BirdVector, Bird);
 	OnBirdInFlockDestroyedChanged.Broadcast();
 
-	if(BirdArray.Num() == 0)
+	if(BirdVector.size() == 0)
 	{
 		Destroy();
 	}

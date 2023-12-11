@@ -50,9 +50,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABirdFlock> BirdFlockBlueprint;
 	
-	TArray<ABirdFlock*> BirdFlocksArray;
-	TArray<ABird*> PredatorsArray;
-	TArray<ABird*> FreeBirdsArray;
+	std::vector<ABirdFlock*> BirdFlocksVector;
+	std::vector<ABird*> PredatorsVector;
+	std::vector<ABird*> FreeBirdsVector;
 
 public:
 	FVector3f PlayableArea;
