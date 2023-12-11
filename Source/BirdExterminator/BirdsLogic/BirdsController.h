@@ -19,7 +19,7 @@ class BIRDEXTERMINATOR_API ABirdsController : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABirdsController();
-	void Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlocksCount);
+	void Initialize(const FVector3f &PlayableAreaRef, const uint16 &BirdFlocksCount, const uint16 &PredatorBirdsAmmo);
 
 	AActor* GetNearestBird(const FVector &LocationFrom, float &Distance);
 	AActor* GetNearestPredator(const FVector &LocationFrom, float &Distance);
@@ -63,8 +63,9 @@ public:
 	UMaterial* StoredMaterialPredator = nullptr;
 	
 	int PreyBirdsAlive = 0;
-	int PredatorBirdsAvailable = 10;
 	int PredatorBirdsAlive = 0;
+
+	uint16 PredatorBirdsAvailable = 10;
 
 private:
 	bool IsInitialized = false;

@@ -34,8 +34,9 @@ void ABirdsController::Destroyed()
 	OnPredatorAliveCountChangedEvent.Clear();
 }
 
-void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const int &BirdFlockCount)
+void ABirdsController::Initialize(const FVector3f &PlayableAreaRef, const uint16 &BirdFlockCount, const uint16 &PredatorBirdsAmmo)
 {
+	PredatorBirdsAvailable = PredatorBirdsAmmo;
 	BirdFlocksArray.Reserve(BirdFlockCount);
 	PlayableArea = PlayableAreaRef;
 	
@@ -125,10 +126,10 @@ void ABirdsController::RegisterAsFreeBird(ABird* Bird)
 
 inline void ABirdsController::RegisterAsPredatorBird(ABird* Bird)
 {
-	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
 	OnPredatorAliveCountChangedEvent.Broadcast(++PredatorBirdsAlive);
-
 	PredatorsArray.Add(Bird);
+	
+	OnPredatorCountChangedEvent.Broadcast(--PredatorBirdsAvailable);
 }
 
 void ABirdsController::UnregisterPredator(ABird* Bird)

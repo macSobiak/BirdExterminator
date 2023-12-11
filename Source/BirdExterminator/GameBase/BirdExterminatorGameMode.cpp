@@ -26,7 +26,7 @@ void ABirdExterminatorGameMode::BeginPlay()
 		return;
 	}
 	
-	BirdsController->Initialize(PlayableArea, 10);
+	BirdsController->Initialize(PlayableArea, BirdFlocksToSpawn, PredatorBirdsAvailable);
 
 	BirdsController->OnBirdCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);
 	BirdsController->OnPredatorCountChangedEvent.AddUObject(this, &ABirdExterminatorGameMode::CheckWinLooseConditions);

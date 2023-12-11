@@ -29,4 +29,10 @@ public:
 	ABirdsController* BirdsController;
 	UPROPERTY()
 	AUIController* UIController;
+
+	UPROPERTY(EditAnywhere)
+	uint16 BirdFlocksToSpawn = 10;
+	
+	UPROPERTY(EditAnywhere)
+	uint16 PredatorBirdsAvailable = 10;
 };

@@ -8,6 +8,13 @@
 /**
  * 
  */
+enum EBoostType : uint8
+{
+	None,
+	Mini,
+	Standard,
+	Launch
+};
 
 class BIRDEXTERMINATOR_API PredatorBehavior : public BirdBehavior
 {
@@ -28,13 +35,14 @@ private:
 	float MaxEnergy = 100;
 	float Energy = 100;
 	
-	float EnergyLossPerSec = 25;
-	float EnergyGainAfterKill = 25;
+	float EnergyLossPerSec = 24;
+	float EnergyGainAfterKill = 38;
 	
 	float BoostDistance = 500;
-	float BoostMultiplier = 1.4;
+	float MiniBoostDistance = 1000;
 	
+	float BoostMultiplier = 1.5;
 	float LaunchCooldown = 0.5;
-	bool IsJustLaunched = true;
-	bool IsOnBoost = false;
+	
+	EBoostType BoostType = Launch;
 };

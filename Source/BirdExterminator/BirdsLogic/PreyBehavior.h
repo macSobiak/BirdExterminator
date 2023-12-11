@@ -22,6 +22,6 @@ private:
 	
 	ABirdFlock *BirdFlockToFollow;
 	int PlaceInFlock = 0;
-	float DangerDistance = 700;
+	float DangerDistance = 750;
 
 };

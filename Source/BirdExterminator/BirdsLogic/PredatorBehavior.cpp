@@ -23,8 +23,8 @@ inline FRotator PredatorBehavior::GetDirectionConditional(const float& DeltaTime
 		return FMath::RInterpConstantTo(CurrentRotation,(NearestBird->GetActorLocation() - CurrentLocation).Rotation(), DeltaTime, TurnSpeed);
 	}
 
-	if(IsOnBoost)
-		IsOnBoost = false;
+	if(BoostType != None)
+		BoostType = None;
 	
 	//if no prey left -> fly around, avoid obstacles and don't leave the play area
 	if(GetIsOutOfBounds(CurrentLocation))
@@ -47,33 +47,42 @@ inline bool PredatorBehavior::HandleBirdHit(AActor* ActorHit)
 		return true;
 	}
 	
-	//if collided with something that is not a Prey, act normal
-	if(IsJustLaunched)
-		IsJustLaunched = false;
+	//if collided with something that is not a Prey during launch time, act normal
+	if(BoostType == Launch)
+		BoostType = None;
 	
 	return false;
 }
 
 inline float PredatorBehavior::GetTurnSpeed() const
 {
-	return IsOnBoost ? TurnSpeed * BoostMultiplier : TurnSpeed;
+	return (BoostType == Standard || BoostType == Mini) ? TurnSpeed * BoostMultiplier * 2 : TurnSpeed;
 }
 
-//apply free 2x boost when predator bird is shot in the same direction
 inline float PredatorBehavior::GetMoveSpeed() const
 {
-	return IsJustLaunched ? MoveSpeed * BoostMultiplier * 2 : (IsOnBoost ? MoveSpeed * BoostMultiplier : MoveSpeed);
+	//after launch, predator is mindlessly flying forward with 2x boost
+	if(BoostType == Launch)
+		return MoveSpeed * BoostMultiplier * 2;
+	
+	if(BoostType == Mini)
+		return MoveSpeed * (((BoostMultiplier - 1) / 2) + 1);
+	
+	if(BoostType == Standard)
+		return MoveSpeed * BoostMultiplier;
+	
+	return MoveSpeed;
 }
 
 inline bool PredatorBehavior::GetIsOnCooldownAndSetBoost(const float& DeltaTime)
 {
-	if(IsJustLaunched)
+	if(BoostType == Launch)
 	{
 		if((LaunchCooldown -= DeltaTime) > 0)
 		{
 			return true;
 		}
-		IsJustLaunched = false;
+		BoostType = None;
 	}
 	return false;
 }
@@ -85,11 +94,33 @@ inline bool PredatorBehavior::GetCanTurn(const float& DeltaTime)
 
 inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& DeltaTime, const float& NearestDistance)
 {
-	if(NearestDistance < BoostDistance && Energy > 0)
+	if(Energy <= 0)
 	{
-		Energy -= EnergyLossPerSec * DeltaTime;
-		if(!IsOnBoost)
-			IsOnBoost = true;
+		if(BoostType != None)
+			BoostType = None;
+	}
+	else
+	{
+		float EnergyLoss;
+		//if predators is very close, apply maximum boost multiplier
+		if(NearestDistance < BoostDistance)
+		{
+			BoostType = Standard;
+			EnergyLoss = EnergyLossPerSec;
+		}
+		//if predators is very close, but still quite far, apply mini boos to close up to prey
+		else if (NearestDistance < MiniBoostDistance)
+		{
+			BoostType = Mini;
+			EnergyLoss = EnergyLossPerSec / 2;
+		}
+		else
+		{
+			BoostType = None;
+			return;
+		}
+
+		Energy -= EnergyLoss * DeltaTime;
 
 		if(Energy <= 0)
 		{
@@ -99,9 +130,4 @@ inline void PredatorBehavior::ConsumeEnergyAndGiveBonusIfPossible(const float& D
 			BirdOwner->TransformToPrey();
 		}
 	}
-	else if(IsOnBoost)
-	{
-		IsOnBoost = false;
-	}
-
 }
