@@ -118,7 +118,7 @@ void ABird::OnHit(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrim
 	//when collision happened add impulse with gravity to simulate hit
 	if(!IsOnHitCooldown)
 	{
-		MeshComponent->AddImpulse(GetActorForwardVector() * BirdBehaviorDefinition->GetMoveSpeed() * 5);
+		MeshComponent->AddImpulse(GetActorForwardVector() * BirdBehaviorDefinition->GetMoveSpeed() * 7);
 		MeshComponent->SetEnableGravity(true);
 	}
 	

@@ -27,7 +27,7 @@ private:
 
 public:
 	
-	void CheckWinLoseConditions(const int &_);
+	void CheckWinLoseConditions(const int &_) const;
 	
 	UPROPERTY()
 	ABirdsController* BirdsController;

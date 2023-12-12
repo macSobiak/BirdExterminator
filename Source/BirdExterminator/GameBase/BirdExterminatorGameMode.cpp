@@ -6,8 +6,8 @@
 #include "BirdExterminator/World/WorldBuilder.h"
 #include "BirdExterminator/BirdsLogic/BirdsController.h"
 #include "BirdExterminator/UI/UIController.h"
-
-
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void ABirdExterminatorGameMode::BeginPlay()
@@ -37,8 +37,9 @@ void ABirdExterminatorGameMode::BeginPlay()
 	CheckWinLoseConditions(0);
 }
 
-void ABirdExterminatorGameMode::CheckWinLoseConditions(const int& _)
+void ABirdExterminatorGameMode::CheckWinLoseConditions(const int& _) const
 {
+	bool GameEndConditionFailed = false;
 	if(BirdsController->PreyBirdsAlive == 0)
 	{
 		UIController->ShowPopup(TEXT("ALL BIRDS EXTERMINATED!\nCONGRATULATIONS!"));
@@ -46,5 +47,17 @@ void ABirdExterminatorGameMode::CheckWinLoseConditions(const int& _)
 	else if (BirdsController->PredatorBirdsAlive == 0 && BirdsController->PredatorBirdsAvailable == 0)
 	{
 		UIController->ShowPopup(FString::Printf(TEXT("THERE ARE %d BIRDS LEFT TO EXTERMINATE!\nYOU LOST!"), BirdsController->PreyBirdsAlive));
+	}
+	else
+	{
+		GameEndConditionFailed = true;
+	}
+
+	if(GameEndConditionFailed)
+		return;
+	
+	if(const auto Character = UGameplayStatics::GetPlayerCharacter(this, 0); Character)
+	{
+		Character->GetCharacterMovement()->DisableMovement();
 	}
 }

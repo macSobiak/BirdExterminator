@@ -41,7 +41,7 @@ private:
 	float Energy = 100;
 	
 	float EnergyLossPerSec = 26;
-	float EnergyGainAfterKill = 40;
+	float EnergyGainAfterKill = 35;
 	
 	float BoostDistance = 500;
 	float MiniBoostDistance = 1000;
