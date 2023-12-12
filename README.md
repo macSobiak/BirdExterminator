@@ -8,19 +8,13 @@ This game is about a bird extermination in a city by shooting predator birds tha
 
 # World
 World is represented by a flat plane and tall cube-like buildings. It is created from a config file located in project config directory, called WorldConfig.txt (example below)
->5,6
->
->500,700,900,1100,200
->
->700,900,1100,1300,600
->
->900,1100,1300,1500,1000
->
->100,400,500,1500,300
->
->900,1100,500,700,600
->
->100,1100,1300,1500,1000
+>5,6<br />
+>900,800,1100,1100,900<br />
+>1100,900,1000,1200,1100<br />
+>700,800,700,1300,800<br />
+>600,500,1500,1400,500<br />
+>300,400,700,1000,1300<br />
+>200,800,600,500,1000<br />
 
 First row - buildings quantity on X axis, buildings quantity on Y axis
 
