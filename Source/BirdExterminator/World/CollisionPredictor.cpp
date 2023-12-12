@@ -26,11 +26,11 @@ void UCollisionPredictor::OnOverlapCollisionPredictorBegin(UPrimitiveComponent* 
 void UCollisionPredictor::OnOverlapCollisionPredictorEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(OtherActor == GetOwner())
+	if(OtherActor == GetOwner() || CollidedObjectsCount == 0)
 		return;
 
 	CollidedObjectsCount--;
-	
+
 	if(CollidedObjectsCount == 0)
 		BirdOwner->UnregisterModifier(DirectionToSet, this);
 }
