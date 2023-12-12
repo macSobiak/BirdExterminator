@@ -19,7 +19,11 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 	WorldConfigFileParser* FileParser = new WorldConfigFileParser;
 	FWorldData WorldData;
 	if(!FileParser->TryGetWorldDataFromConfigFile(WorldData, ErrorMessage))
+	{
+		delete FileParser;
+		FileParser = nullptr;
 		return false;
+	}
 	
 	float BuildingSizeX = BuildingSize * BuildingScaleX;
 	float BuildingSizeY = BuildingSize * BuildingScaleY;
@@ -61,6 +65,8 @@ bool AWorldBuilder::GenerateWorld(FVector3f &PlayableArea, FString &ErrorMessage
 	SpawnInvisibleWalls(WorldSize, MaxBuildingHeight);
 	ResetPlayerCharacter(WorldData.WorldSizeX, WorldData.WorldSizeY);
 
+	delete FileParser;
+	FileParser = nullptr;
 	return true;
 }
 
